@@ -1,0 +1,399 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+.cfx:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+
+/* FLUX */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+	font-family: 'Roboto', sans-serif ;
+}
+
+*[off] {
+    display: none !important;
+}
+
+/* NAVIGATION */
+
+nav {
+	top: 20px;
+	left: 15px;
+	bottom: 20px;
+  position: absolute;
+
+	width: 70px;
+	overflow: hidden;
+	padding-top: 5px;
+	border-radius: 8px;
+  text-align: center;
+
+  background: #232635;
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
+}
+
+nav button .material-icons {
+  font-size: 32px;
+}
+
+nav button {
+  margin: 2px 0;
+  color: #6A748F;
+}
+
+nav button:hover {
+  color: white;
+}
+
+nav .upload {
+	left: 0;
+	bottom: -5px;
+	width: 70px;
+	height: 65px;
+	border-radius: 0;
+	text-align: center;
+	position: absolute;
+	background: #1a1c26;
+}
+
+.assets-nav {
+  float: right;
+}
+
+/* BUTTONS */
+
+button {
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  background: none;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background .3s ease, color .3s ease;
+}
+
+.assets-nav button:hover {
+  color: #29293e;
+  background: white
+}
+
+/* WRAPPERS */
+
+.wrap {
+	margin: 20px;
+}
+
+.flux {
+	width: 100%;
+	height: 100%;
+	display: block;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	position: fixed;
+	background: #F8F8F8;
+}
+
+.menu {
+	height: 100%;
+	display: block;
+	position: relative;
+
+	float: left;
+	width: 90px;
+	background: #F2F2F2;
+	border-left: 1px solid #D4D4D4;
+}
+
+.content {
+	height: 100%;
+	display: block;
+	position: relative;
+
+	margin-left: 90px;
+	margin-right: 380px;
+	background: #F2F2F2;
+	border-right: 1px solid #D4D4D4;
+}
+
+.composer {
+	height: 100%;
+	display: block;
+	position: relative;
+
+	width: 380px;
+	float: right;
+}
+
+
+/* DOCX DISPLAY */
+.content .docx {
+	top: 20px;
+	bottom: 20px;
+	color: #1c1c1c;
+	padding: 0 20px;
+	font-size: 15px;
+	font-weight: 200;
+	line-height: 24px;
+	position: absolute;
+}
+
+.content .docx > * {
+	position: relative;
+}
+
+.content .docx > *:hover {
+	background: rgba(28, 157, 230, 0.49);
+}
+
+.content .docx > *.selected {
+	background: rgba(195, 28, 230, 0.1);
+}
+
+/* Glass cover */
+.content .docx > *:before {
+	content: ' ';
+	display: block;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	background: rgba(0, 0, 0, 0);
+}
+
+.content .docx > *.divided:before {
+	content: none;
+}
+
+/* COMPOSER */
+
+.composer__header {
+	padding: 0px;
+	background: #232635;
+	border-bottom: 1px solid #ccc;
+}
+
+.composer__header__logo {
+	margin-bottom: 5px;
+}
+
+.composer__header__menu button {
+	color: white;
+	border-radius: 0;
+	padding: 10px;
+	background: #232635;
+	display: inline-block;
+	float: left;
+}
+
+.composer__header__menu button i {
+	vertical-align: bottom;
+}
+
+.composer__header__menu button:hover {
+	color: #FF1B42;
+	background: #33384e;
+}
+
+.composer__header__menu button.active {
+	font-weight: bold;
+	color: #FF1B42;
+
+	background: #33384e;
+	background: -moz-linear-gradient(top,  #33384e 94%, #ff1b42 94%);
+	background: -webkit-linear-gradient(top,  #33384e 94%,#ff1b42 94%);
+	background: linear-gradient(to bottom,  #33384e 94%,#ff1b42 94%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#33384e', endColorstr='#ff1b42',GradientType=0 );
+}
+
+
+/* COMPOSE SECTION */
+
+.composer__compose {
+	width: 60%;
+	float: left;
+	height: 100%;
+	display: block;
+	min-height: 5px;
+	padding-top: 3px;
+}
+
+.block {
+	background: white;
+	border-radius: 4px;
+	padding: 5px 10px 5px 10px;
+	margin: 10px 10px 10px 20px;
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
+}
+
+.block a {
+	text-decoration: none;
+}
+
+.block:after {
+	/*Clearfix*/
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+
+.block img {
+	width: 100%;
+	height: auto;
+}
+
+.block:first-of-type {
+	/*margin-top: 0px;*/
+}
+
+ .block__title {
+	float: left;
+	color: #232635;
+	font-size: 14px;
+	font-weight: 200;
+	padding-top: 7px;
+}
+
+ .block__close {
+	padding: 0px;
+	float: right;
+	color: #232635;
+	line-height: 0;
+	margin-right: -5px;
+}
+
+
+/* COMPOSER ASSTES */
+
+.composer__assets {
+	width: 40%;
+	float: left;
+	height: 100%;
+	display: block;
+}
+
+.composer__assets .asset__card {
+  float: left;
+  cursor: pointer;
+  overflow: hidden;
+  background: white;
+  border-radius: 6px;
+  position: relative;
+	margin: 10px 20px 10px 10px;
+  transform: scale(1) translateZ(0);
+  transition: box-shadow .3s ease, transform .3s ease;
+}
+
+.composer__assets .asset__card:first-of-type {
+	margin-top: 3px;
+}
+
+.composer__assets .asset__card:hover {
+  transform: scale(1.05) translateZ(0);
+  box-shadow: 1px 1px 4px 2px rgba(0,0,0,.3);
+}
+
+.composer__assets .asset__card:before {
+   content: ' ';
+   display: block;
+   width: 100%;
+   height: 100%;
+   position: absolute;
+   background: rgba(30, 134, 209, 0);
+}
+
+.composer__assets .asset__card img {
+  width: 100%;
+  height: auto;
+  margin-bottom: -5px;
+}
+
+
+/* HANDLER */
+
+div[data-flux-handle] {
+	background: #ccc;
+}
+
+/* OPTIONS
+
+input {
+  border: none;
+  width: 100%;
+	color: #666;
+  font-size: 14px;
+  background: none;
+  padding: 15px 0 5px 0;
+  border-bottom: 1px solid #999;
+}
+
+label {
+  color: #232635;
+  font-size: 11px;
+  font-family: sans-serif;
+}
+
+.figure-opts li {
+  margin: 20px 0 35px 0;
+}
+ */

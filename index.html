@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FLUX</title>
+  <!-- Import FONTS -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700|Roboto:300,400,500,700&subset=latin-ext"/>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700&amp;subset=latin-ext" rel="stylesheet">
+  <!-- FLUX STYLES -->
+  <link rel="stylesheet" href="styles/style.css"/>
+  <!-- DOCX STYLES -->
+  <link rel="stylesheet" href="styles/docx.css"/>
+  <!-- Import ICONS -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+  <!--  Perfect Scrollbar -->
+  <link rel="stylesheet" href="bower_components/perfect-scrollbar/css/perfect-scrollbar.min.css" />
+  <script src="bower_components/perfect-scrollbar/js/perfect-scrollbar.min.js"></script>
+  <!-- Sortable.js-->
+  <script src="bower_components/Sortable/Sortable.min.js"></script>
+  <!-- Mammoth.js -->
+  <script src="scripts/vendors/mammoth.min.js"></script>
+  <!-- MathJax.js -->
+  <script src="bower_components/MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <!-- T5 Templates -->
+  <script src="scripts/vendors/T5.js" charset="utf-8"></script>
+</head>
+<body>
+  <div class="flux">
+
+    <!-- MAIN TOOLBAR -->
+    <div class="menu">
+      <nav data-flux="toolbox" data-t5="toolbox">
+        <button repeat="tool in toolset" title="{{tool.tip}}" data-action="{{tool.name}}">{{tool.icon}}</button>
+        <button id="activate" title="Załaduj DOCX" class="upload"><i class="material-icons">file_upload</i></button>
+      </nav>
+    </div>
+
+    <!-- COMPOSER PANEL -->
+    <div class="composer">
+      <div class="composer__header">
+        <div data-flux="menu" class="composer__header__menu cfx">
+          <button title="Grafiki"><i class="material-icons">image</i></button>
+          <button title="Odnośniki"><i class="material-icons">link</i></button>
+          <button title="Rwownania" class="active"><i class="material-icons">functions</i></button>
+          <button id="convert" title="Konwertuj"><i class="material-icons">code</i></button>
+        </div>
+      </div>
+      <div class="composer__panels cfx">
+
+        <ul data-flux="composer" data-t5="eqs">
+          <li repeat="eq in equations" class="block">
+            <a href="#{{eq.handler}}"class="block__title">{{ eq.content }}</a>
+            <button class="block__close" data-action="delete" ><i class="material-icons">close</i></button>
+          </li>
+        </ul>
+
+
+
+        <!-- COMPOSER D&D LIST
+        <div class="composer__compose">
+          <ul data-flux="composer" data-t5="blocks">
+            <li repeat="block in bucket" class="block">
+              <span class="block__title">{{# (block.firstChild instanceof HTMLImageElement) ? block.innerHTML : block.innerHTML.slice(0,25) + '...' }}</span>
+              <button class="block__close" data-action="delete" ><i class="material-icons">close</i></button>
+            </li>
+          </ul>
+        </div>-->
+
+        <!-- DYNAMIC ASSETS LIST
+        <div class="composer__assets">
+          <ul data-flux="assets" data-t5="images">
+            <li repeat="img in images" data-select="{{ img.src }}" class="asset__card {{# img.active ? 'active' : '' }}">
+              <img tsrc="{{ img.src }}" alt="Image Asset">
+            </li>
+          </ul>
+        </div>-->
+      </div>
+    </div>
+
+    <!--  DOCX CONTENT -->
+    <div class="content">
+      <div id="docx" data-flux="docx" class="docx">
+        <!--  DOCX CONTENT GOES HERE. -->
+      </div>
+    </div>
+
+  </div>
+  <!-- Import Flux Utilities -->
+  <script src="scripts/flux.utils.js"></script>
+  <!-- Import Flux Transformers -->
+  <script src="scripts/transformers.js"></script>
+  <!-- Import Flux Converters -->
+  <script src="scripts/converters.js"></script>
+  <!-- MAMMOTH Configuration -->
+  <script src="scripts/mammoth.conf.js" charset="utf-8"></script>
+  <!-- FLUX Core  -->
+  <script src="scripts/flux.js" charset="utf-8"></script>
+  <!-- Startup code -->
+  <script type="text/javascript">
+    Flux.init({
+      mammoth : mammothConfig,
+      convert: [CNXTitle, CNXParagraph, CNXEmphasis, CNXExercise, CNXFigure],
+      transform: [title, heading, paragraph, figure, exercise, definition, cut, remove]
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+
+/*Styles inspirations https://wdexplorer.com/20-examples-beautiful-css-typography-design/ */
+
+.docx {
+  color: #333;
+  font-size: 17px;
+  line-height: 26px;
+  font-family: 'Roboto Slab', serif;
+}
+
+
+h1.title {
+  font-size: 42px;
+  line-height: 50px;
+  margin-bottom: 0;
+}
+
+p.subtitle {
+  font-size: 19px;
+  line-height: 36px;
+  color: #666;
+  font-family: Georgia;
+}
+
+.docx h1 {
+  font-size: 34px;
+  line-height: 42px;
+  margin-bottom: 10px;
+}
+
+.docx h2 {
+  font-size: 30px;
+  line-height: 36px;
+  margin-bottom: 12px;
+}
+
+.docx h3 {
+  font-size: 26px;
+  line-height: 28px;
+  margin-bottom: 12px;
+}
+
+.docx small {
+  font-size: 0.8em;
+}
+
+.docx em.bold  {
+   font-weight: bold;
+}
+
+.docx em.italic {
+   font-style: italic;
+}
+
+.docx ul {
+  padding-left: 40px;
+  list-style: circle;;
+}
+
+.docx ol {
+  padding-left: 40px;
+  list-style: decimal;
+}
+
+.docx li {
+  margin: 5px 0;
+}
+
+.docx figure {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.docx figcaption {
+  color: #575757;
+  font-size: 0.9em;
+}
+
+.docx p {
+  margin-bottom: 15px;
+}
+
+
+.docx div.exercise {
+  overflow: hidden;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #028ee7;
+}
+
+.docx div.exercise h3 {
+  padding: 10px;
+  color: white;
+  font-size: 22px;
+  margin-bottom: 0;
+  line-height: 24px;
+  background: #028ee7;
+}
+
+.docx div.exercise .exercise__content {
+  padding: 10px;
+}
+
+.docx div.exercise .exercise__answers {
+  padding: 0px;
+}
+
+.docx div.exercise .exercise__answers {
+  background: #CBCBCB;
+  font-style: italic;
+  padding: 10px;
+}
+
+.docx span.reference {
+  color: #2d34c6;
+  font-style: italic;
+}
+
+
+.docx .definition {
+  padding-left: 25px;
+}
+
+.docx .math {
+  color: #3f96dd;
+}
