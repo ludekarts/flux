@@ -29,25 +29,20 @@
 
     <!-- MAIN TOOLBAR -->
     <div class="menu">
-      <nav data-flux="toolbox">
-        <!-- DYNAMIC TOOLBOX -->
+      <nav data-flux="toolbox" data-t5="toolbox">
+        <button repeat="tool in toolset" title="{{ tool.tip }}" data-action="{{ tool.name }}">{{ tool.icon }}</button>
       </nav>
     </div>
 
     <!-- COMPOSER PANEL -->
     <div class="composer">
       <div class="composer__header">
-        <div data-flux="menu" class="composer__header__menu cfx">
-          <button title="Kolekcje" data-action="collections"><i class="material-icons">view_day</i></button>
-          <!-- <button title="Grafiki" data-action="graphics"><i class="material-icons">image</i></button>
-          <button title="Odnośniki" data-action="links"><i class="material-icons">link</i></button>
-          <button title="Rwownania" data-action="equations"><i class="material-icons">functions</i></button>
-          <button title="Informacje" data-action="info"><i class="material-icons">info_outline</i></button>
-          <button title="Konwertuj" data-action="convert"><i class="material-icons">code</i></button> -->
+        <div data-flux="composer" class="composer__header__menu cfx" data-t5="composer">
+          <button repeat="widget in widgets" title="{{ widget.tip }}" data-action="{{ widget.name }}">{{ widget.icon }}</button>
           <button title="Wiecej narzędzi" data-action="more" class="more-tools"><i class="material-icons">more_vert</i></button>
         </div>
       </div>
-      <div data-flux="composer"class="composer__panels cfx">
+      <div data-flux="widget"class="composer__panels cfx">
         <!-- DYNAMIC VIEWS -->
       </div>
     </div>
@@ -66,14 +61,15 @@
   <script src="scripts/templates.js"></script>
   <!-- Import Flux Transformers -->
   <script src="scripts/transformers.js"></script>
-  <!-- Import Flux Panels -->
-  <script src="scripts/panels.js"></script>
+  <!-- Import Flux Widgets -->
+  <script src="scripts/widgets.js"></script>
   <!-- Import Flux Converters -->
   <script src="scripts/converters.js"></script>
   <!-- MAMMOTH Configuration -->
   <script src="scripts/mammoth.conf.js" charset="utf-8"></script>
   <!-- FLUX Core  -->
-  <script src="scripts/flux.js" charset="utf-8"></script>
+  <!-- <script src="scripts/flux.js" charset="utf-8"></script> -->
+  <script src="scripts/flux.core.js" charset="utf-8"></script>
   <!-- Startup code -->
   <script type="text/javascript">
     Flux.init({
@@ -96,7 +92,7 @@
         // cut,
         // remove
       ],
-      panels : [
+      widgets : [
         colections,
         // images,
         // links,
@@ -108,3 +104,10 @@
   </script>
 </body>
 </html>
+
+<!-- <button title="Kolekcje" data-action="collections"><i class="material-icons">view_day</i></button>
+<button title="Grafiki" data-action="graphics"><i class="material-icons">image</i></button>
+<button title="Odnośniki" data-action="links"><i class="material-icons">link</i></button>
+<button title="Rwownania" data-action="equations"><i class="material-icons">functions</i></button>
+<button title="Informacje" data-action="info"><i class="material-icons">info_outline</i></button>
+<button title="Konwertuj" data-action="convert"><i class="material-icons">code</i></button> -->

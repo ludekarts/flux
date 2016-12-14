@@ -2,7 +2,6 @@ const FluxTemplates = {
   toolbox: `
     <div>
       <button repeat="tool in toolset" title="{{tool.tip}}" data-action="{{tool.name}}">{{tool.icon}}</button>
-      <button id="activate" title="Załaduj DOCX" class="upload"><i class="material-icons">file_upload</i></button>
     </div>`,
 
 

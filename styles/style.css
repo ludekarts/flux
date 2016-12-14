@@ -78,13 +78,14 @@ nav {
 	bottom: 0;
   position: absolute;
 
-	width: 70px;
+	width: 60px;
 	overflow: hidden;
 	padding-top: 5px;
   text-align: center;
 
-  background: #232635;
-	box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
+  background: #EDEDED;
+	border-right: 1px solid #D4D4D4;
+	/*box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);*/
 }
 
 nav button .material-icons {
@@ -93,11 +94,11 @@ nav button .material-icons {
 
 nav button {
   margin: 2px 0;
-  color: #6A748F;
+  color: #1a1c26;
 }
 
 nav button:hover {
-  color: white;
+  color: #f40c4b;
 }
 
 nav .upload {
@@ -157,8 +158,7 @@ button {
 	position: relative;
 
 	float: left;
-	width: 75px;
-	background: #F2F2F2;
+	width: 60px;
 }
 
 .content {
@@ -166,9 +166,8 @@ button {
 	display: block;
 	position: relative;
 
-	margin-left: 75px;
+	margin-left: 60px;
 	margin-right: 380px;
-	background: #F2F2F2;
 	border-right: 1px solid #D4D4D4;
 }
 
@@ -222,9 +221,13 @@ button {
 
 /* COMPOSER */
 
+.composer {
+	background: #F2F2F2;
+}
+
 .composer__header {
 	padding: 0px;
-	background: #232635;
+	background: #EDEDED;
 	border-bottom: 1px solid #ccc;
 }
 
@@ -234,10 +237,10 @@ button {
 
 .composer__header__menu button {
 	float: left;
-	color: white;
+	color: #232635;
 	padding: 10px;
 	border-radius: 0;
-	background: #232635;
+	background: #EDEDED;
 	display: inline-block;
 }
 
@@ -250,19 +253,19 @@ button {
 }
 
 .composer__header__menu button:hover {
-	color: #FF1B42;
-	background: #33384e;
+	color: #f40c4b;
+	background: #d7d7d7;
 }
 
 .composer__header__menu button.active {
 	font-weight: bold;
-	color: #FF1B42;
+	color: #d7d7d7;
 
-	background: #33384e;
-	background: -moz-linear-gradient(top,  #33384e 94%, #ff1b42 94%);
-	background: -webkit-linear-gradient(top,  #33384e 94%,#ff1b42 94%);
-	background: linear-gradient(to bottom,  #33384e 94%,#ff1b42 94%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#33384e', endColorstr='#ff1b42',GradientType=0 );
+	background: #d7d7d7;
+	background: -moz-linear-gradient(top,  #d7d7d7 94%, #f40c4b 94%);
+	background: -webkit-linear-gradient(top,  #d7d7d7 94%,#f40c4b 94%);
+	background: linear-gradient(to bottom,  #d7d7d7 94%,#f40c4b 94%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d7d7d7', endColorstr='#f40c4b',GradientType=0 );
 }
 
 
@@ -375,6 +378,7 @@ button {
 
 div[data-flux-handle] {
 	font-family: sans-serif;
+	border-radius: 20px;
 	position: relative;
 	background: #ddd;
 	padding: 0 10px;
