@@ -1,7 +1,10 @@
-const Flux = (function (t5, Sortable, Pscroll, Mammoth, MathJax, $window) {
+const Flux = (function (t5, templates, Sortable, Pscroll, Mammoth, MathJax, $window) {
 
   let _upload, _toolbox, _toolset = [], _docx, _docxElements, _composer, _transformers = {}, _transformersIndex = [],
       _menu,  _sortable,  bucket = [], _mammothOpts, isShift = false, _equations = [], _outputNodes = new WeakMap(), _converters = {};
+
+  // List of selectors excluded from CONVERSION process.
+  const _excludedSelectors = ['div[data-flux-handle]'];
 
   // ---- HELPERS ----------------
 
@@ -23,26 +26,56 @@ const Flux = (function (t5, Sortable, Pscroll, Mammoth, MathJax, $window) {
       bucket.forEach(element => element.classList.remove('selected'));
       bucket = [];
     }
-  }
+  };
 
+  // Creates unique 8-chars IDs.
+  const hashID = {
+    chars : '23456789abdegjkmnpqrvwxyz',
+    cache : [],
+    hash() {
+      let result = '';
+      for (let i = 0; i < 8; i++) result += this.chars.charAt(Math.floor(Math.random() * 25));
+      return result;
+    },
+    generate() {
+      let id, retries = 0;
+      while(!id && retries < 9999) {
+        id = this.hash();
+        if(~this.cache.indexOf(id)) {
+          id = null;
+          retries++;
+        }
+      }
+      this.cache.push(id);
+      return id;
+    }
+  };
 
   // Replace @nodeList with @newNode.
   const replaceNodes = (nodeList, newNodes) => {
     if(!Array.isArray(newNodes)) newNodes = [newNodes];
-
+    // Locals.
+    let cnversionHandle;
     const parent = nodeList[0].parentNode;
     const startElement = parent.children[[].indexOf.call(parent.children, nodeList[0])];
-
     // Append new nodes.
     newNodes.forEach((node, index) => {
+      if (node.dataset.fluxType) cnversionHandle = node;
       parent.insertBefore(node, startElement);
     });
-
+    // Detect if wrapper component need to be added?
+    if (cnversionHandle && cnversionHandle.dataset.fluxHandle) {
+      const wrappId = hashID.generate(startElement);
+      const content = cnversionHandle.dataset.fluxHandle;
+      cnversionHandle.dataset.fluxHandle = wrappId;
+      parent.insertBefore(createWrapperHandle(content, wrappId), startElement);
+    }
     // Remove old nodes.
     nodeList.forEach(node => parent.removeChild(node));
-
     // Clear.
     newNodes = undefined;
+    // Return Conversion Handle.
+    return cnversionHandle;
   };
 
   // Process .docx document with Mammoth.
@@ -63,6 +96,19 @@ const Flux = (function (t5, Sortable, Pscroll, Mammoth, MathJax, $window) {
       // Convert Match sumbols.
       convertMath();
     }).done();
+  };
+
+  // create Wrapper Handle
+  const createWrapperHandle = (content, id) => {
+    const handle = document.createElement('div');
+    handle.dataset.fluxHandle = id;
+    handle.innerHTML = content;
+    return handle;
+  };
+
+  // While error detected report parametres of element for debuging.
+  const reportElement = (element) => {
+    return element.innerHTML.slice(0,25);
   };
 
   // Convert Math Style to MathJax.
@@ -105,11 +151,11 @@ const Flux = (function (t5, Sortable, Pscroll, Mammoth, MathJax, $window) {
         // Find right transformer to run.
         const transform = _transformers[event.target.dataset.action].format(bucket);
         // Replace nodes in preview.
-        replaceNodes(bucket, transform.dom);
+        const cnversionHandle = replaceNodes(bucket, transform.dom);
         // Add globaly avilabele mapping between element DOM & COM --> Imporove element search.
-        if (transform.com && !_outputNodes.has(transform.dom[0])) _outputNodes.set(transform.dom[0], transform.com);
+        if (transform.com && !_outputNodes.has(cnversionHandle)) _outputNodes.set(cnversionHandle, transform.com);
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
       clearBucket();
       t5.render('blocks', {bucket});
@@ -168,7 +214,7 @@ const Flux = (function (t5, Sortable, Pscroll, Mammoth, MathJax, $window) {
         }
       }
       else {
-        console.warn(`Element otagowany jako "${element.tagName.toLowerCase() + (element.dataset.fluxType === 'default' ? '' : '.' + element.dataset.fluxType)}"" nie posiada konwertera`);
+        console.warn(`Element otagowany jako "${reportElement(element)}" nie posiada konwertera`);
       }
       return result;
     },'')
@@ -209,8 +255,12 @@ const Flux = (function (t5, Sortable, Pscroll, Mammoth, MathJax, $window) {
           _converters[_name] = converter
        });
      });
-
     //console.log(_converters);
+  };
+
+  // Switch View in composer panel.
+  const switchView = (view) => {
+    _composer.innerHTML = t5.render(view, []);
   };
 
   // Initialize.
@@ -235,17 +285,8 @@ const Flux = (function (t5, Sortable, Pscroll, Mammoth, MathJax, $window) {
     // Add Converters plugins.
     installConverters(convert);
 
-    // Fetch templates & Render empty bucket.
-    t5.template()
-      .render('blocks', {bucket});
-
-    // Render images. <-- to be removed!!
-    t5.render('images', {images:[]});
-
-    // Render toolbox.
-    t5.render('toolbox', { toolset: _toolset });
-
-    t5.render('eqs', {equations :[]});
+    // Register templates.
+    Object.keys(templates).forEach(name => t5.template(name, templates[name]));
 
     // Create upload placeholder.
     _upload= document.createElement('input');
@@ -256,8 +297,8 @@ const Flux = (function (t5, Sortable, Pscroll, Mammoth, MathJax, $window) {
     _toolbox = document.querySelector('[data-flux="toolbox"]');
     _composer = document.querySelector('[data-flux="composer"]');
 
-    const _convert= document.getElementById('convert');
-    _convert.addEventListener('click', convertHandler);
+    // Render toolbox.
+    _toolbox.innerHTML = t5.render('toolbox', { toolset: _toolset });
 
     if (!(_docx  && _toolbox && _composer))
       throw new Error('Uwaga! Proces zatrzymany. Barak jednego z wymaganych komponentow UI.');
@@ -281,12 +322,4 @@ const Flux = (function (t5, Sortable, Pscroll, Mammoth, MathJax, $window) {
 
   // Public API.
   return { init }
-}(t5, Sortable, Ps, mammoth, MathJax, window));
-
-
-// if (element.dataset.base) {
-//     result += _converters['p'].convert([element]);
-// }
-// else if (element.dataset.fluxTransform && element.dataset.fluxTransform === 'figure'){
-//   result += _converters['figure'].convert(_outputNodes.get(element));
-// }
+}(t5, FluxTemplates, Sortable, Ps, mammoth, MathJax, window));

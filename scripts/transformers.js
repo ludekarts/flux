@@ -1,20 +1,18 @@
-//
-// All Transformers should to return single DOM element or ARRAY of elememts.
-//
+
+/* ---- FLUX Transformers ---- */
 
 // ---- TITLE --------------------
 
-// Transform @elements into HTML Heading.
+// Transform @elements into HTML Title.
 const title = (({strip, createElement}) => {
   return {
     name: 'title',
     tooltip: 'Tytuł',
     icon: '<i class="material-icons">title</i>',
     format (elements) {
-      const com = {
-        content: elements.reduce((result, element) => result += ' ' + strip(element), '')
-      };
-      return { com, dom: createElement('h1.title', com.content, 'title') }
+      const com = { content: elements.reduce((result, element) => result += ' ' + strip(element), '') };
+      const handle = 'Koniec sekcji: ' +  com.content.slice(0,25) + '...';
+      return { com, dom: createElement('h1.title', com.content, 'title', handle) }
     }
   }
 })(FluxUtils);
@@ -41,7 +39,7 @@ const heading = (({strip}) => {
 // ---- PARAGRAPH ------------------
 
 // Transform @elements into HTML Paragraph.
-const paragraph = (({createElement}) => {
+const paragraph = (({strip, createElement}) => {
   return {
     name: 'paragraph',
     tooltip: 'Paragraf',
@@ -93,7 +91,6 @@ const remove = (() => {
 const figure = (({strip, createElement}) => {
 
   const getImgSource = (imgstring) => imgstring.match(/src="([^"]+)"/)[1];
-
   const matchImage = (element) => {
     const match = element.innerHTML.match(/<\s*\/?\s*img\s*.*?>/g);
     return match ? match[0] : '';
@@ -141,13 +138,11 @@ const exercise = (({strip, createElement}) => {
   const _solution = (content) => content ? `<div class="exercise__answers">${content}</div>` : '';
 
   const template = ({ label, problem, solution }) => `
-    <div data-flux-type="exercise" class="exercise">
-      <h3>${label}</h3>
-      <div class="exercise__content">
-        ${problem}
-      </div>
-      ${_solution(solution)}
-    </div>`;
+    <h3>${label}</h3>
+    <div class="exercise__content">
+      ${problem}
+    </div>
+    ${_solution(solution)}`;
 
   return {
     name: 'exercise',
@@ -160,7 +155,7 @@ const exercise = (({strip, createElement}) => {
         problem: elements[1].innerHTML,
         solution: elements[2] ? _solutions(elements[2].innerHTML) : ''
       };
-      return { com, dom: Array.from(createElement('div', template(com)).children) }
+      return { com, dom: createElement('div.exercise', template(com), 'exercise') }
     }
   }
 })(FluxUtils);
@@ -179,11 +174,10 @@ const definition = (({createElement}) => {
       const wrapper = createElement('div');
       wrapper.classList.add('definition');
       elements.forEach(element => {
-        console.log(element);
         wrapper.appendChild(element.cloneNode(true))
       });
       // FIXME: Add correct Content Object Model.
-      return { dom: [wrapper] };
+      return { dom: wrapper };
     }
   }
 })(FluxUtils);

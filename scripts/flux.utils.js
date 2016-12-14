@@ -10,7 +10,7 @@ const FluxUtils = {
     if (classes) result.className = classes;
     if (content) result.innerHTML = content;
     if (fluxType) result.dataset.fluxType = fluxType;
-    if (isWrapper) result.dataset.fluxHadle = true;
+    if (isWrapper) result.dataset.fluxHandle = isWrapper;
     return result;
   },
 
