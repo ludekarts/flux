@@ -9,10 +9,12 @@ const title = (({strip, createElement}) => {
     name: 'title',
     tooltip: 'Tytuł',
     icon: '<i class="material-icons">title</i>',
-    format (elements) {
-      const com = { content: elements.reduce((result, element) => result += ' ' + strip(element), '') };
-      const handle = 'Koniec sekcji: ' +  com.content.slice(0,25) + '...';
-      return { com, dom: createElement('h1.title', com.content, 'title', handle) }
+    format ({subscribe, publish}) {
+      return (elements) => {
+        const com = { content: elements.reduce((result, element) => result += ' ' + strip(element), '') };
+        const handle = 'Koniec sekcji: ' +  com.content.slice(0,25) + '...';
+        return { com, dom: createElement('h1.title', com.content, 'title', handle) }
+      }
     }
   }
 })(FluxUtils);
@@ -26,11 +28,13 @@ const heading = (({strip}) => {
     name: 'heading',
     tooltip: 'Nagłówek',
     icon: '<i class="material-icons">format_size</i>',
-    format (elements) {
-      const com = {
-        content: elements.reduce((result, element) => result += ' ' + strip(element), '')
-      };
-      return { com, dom: createElement('h1', com.content, 'default') }
+    format ({subscribe, publish}) {
+      return (elements) => {
+        const com = {
+          content: elements.reduce((result, element) => result += ' ' + strip(element), '')
+        };
+        return { com, dom: createElement('h1', com.content, 'default') }
+      }
     }
   }
 })(FluxUtils);
@@ -44,11 +48,13 @@ const paragraph = (({strip, createElement}) => {
     name: 'paragraph',
     tooltip: 'Paragraf',
     icon: '<i class="material-icons">sort</i>',
-    format (elements) {
-      const com = {
-        content: elements.reduce((result, element) => result += ' ' + strip(element), '')
-      };
-      return { com, dom: createElement ('p', com.content, 'default')};
+    format ({subscribe, publish}) {
+      return (elements) => {
+        const com = {
+          content: elements.reduce((result, element) => result += ' ' + strip(element), '')
+        };
+        return { com, dom: createElement ('p', com.content, 'default')};
+      }
     }
   }
 })(FluxUtils);
@@ -62,10 +68,12 @@ const cut = (() => {
     name: 'cut',
     tooltip: 'Rozdziel elemementy',
     icon: '<i class="material-icons">content_cut</i>',
-    format(elements) {
-      const result = [];
-      elements.forEach(element => element.children.length > 0 ? result.push(...Array.from(element.children)) : result.push(element.cloneNode(true)));
-      return { dom: result };
+    format ({subscribe, publish}) {
+      return (elements) => {
+        const result = [];
+        elements.forEach(element => element.children.length > 0 ? result.push(...Array.from(element.children)) : result.push(element.cloneNode(true)));
+        return { dom: result };
+      }
     }
   }
 })();
@@ -80,7 +88,9 @@ const remove = (() => {
     tooltip: 'Usuń element',
     shortcut: '46',
     icon: '<i class="material-icons">delete_forever</i>',
-    format() { return { dom: [] } }
+    format ({subscribe, publish}) {
+      return () => { return { dom: [] } }
+    }
   }
 })();
 
@@ -106,24 +116,26 @@ const figure = (({strip, createElement}) => {
     name: 'figure',
     tooltip: 'Figura',
     icon: '<i class="material-icons">image</i>',
-    format (elements) {
-      const com = { title: '', caption: ''};
-      elements.forEach(element => {
-        if (!com.src) {
-          com.title += ' ' + strip(element);
-          com.src = getImgSource(matchImage(element));
-        }
-        else {
-          com.caption += ' ' + strip(element);
-        }
-      });
+    format ({subscribe, publish}) {
+      return (elements) => {
+        const com = { title: '', caption: ''};
+        elements.forEach(element => {
+          if (!com.src) {
+            com.title += ' ' + strip(element);
+            com.src = getImgSource(matchImage(element));
+          }
+          else {
+            com.caption += ' ' + strip(element);
+          }
+        });
 
-      return {
-        dom: Array.from(createElement('div', template(com.title, com.src, com.caption)).children),
-        com : {
-          src: 'imeges/1.jpeg',
-          title: (com.title.trim().length > 0 ? com.title.trim() : undefined),
-          caption: (com.caption.trim().length > 0 ? com.caption.trim() : undefined),
+        return {
+          dom: Array.from(createElement('div', template(com.title, com.src, com.caption)).children),
+          com : {
+            src: 'imeges/1.jpeg',
+            title: (com.title.trim().length > 0 ? com.title.trim() : undefined),
+            caption: (com.caption.trim().length > 0 ? com.caption.trim() : undefined),
+          }
         }
       }
     }
@@ -148,14 +160,16 @@ const exercise = (({strip, createElement}) => {
     name: 'exercise',
     tooltip: 'Zadanie',
     icon: '<i class="material-icons">assignment_turned_in</i>',
-    format(elements) {
-      if(elements.length > 3) throw new Error('Too many elements selected');
-      const com = {
-        label: elements[0].innerHTML,
-        problem: elements[1].innerHTML,
-        solution: elements[2] ? _solutions(elements[2].innerHTML) : ''
-      };
-      return { com, dom: createElement('div.exercise', template(com), 'exercise') }
+    format ({subscribe, publish}) {
+      return (elements) => {
+        if(elements.length > 3) throw new Error('Too many elements selected');
+        const com = {
+          label: elements[0].innerHTML,
+          problem: elements[1].innerHTML,
+          solution: elements[2] ? _solutions(elements[2].innerHTML) : ''
+        };
+        return { com, dom: createElement('div.exercise', template(com), 'exercise') }
+      }
     }
   }
 })(FluxUtils);
@@ -170,14 +184,16 @@ const definition = (({createElement}) => {
     name: 'definition',
     tooltip: 'Definicja',
     icon: '<i class="material-icons">format_quote</i>',
-    format(elements) {
-      const wrapper = createElement('div');
-      wrapper.classList.add('definition');
-      elements.forEach(element => {
-        wrapper.appendChild(element.cloneNode(true))
-      });
-      // FIXME: Add correct Content Object Model.
-      return { dom: wrapper };
+    format ({subscribe, publish}) {
+      return (elements) => {
+        const wrapper = createElement('div');
+        wrapper.classList.add('definition');
+        elements.forEach(element => {
+          wrapper.appendChild(element.cloneNode(true))
+        });
+        // FIXME: Add correct Content Object Model.
+        return { dom: wrapper };
+      }
     }
   }
 })(FluxUtils);

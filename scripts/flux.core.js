@@ -1,10 +1,23 @@
 // FLUX CORE v 0.0.5 by Wojciech Ludwin, ludekarts@gmail.com.
-const Flux = ((utils, t5, Sortable, Pscroll, Mammoth, MathJax, $window) => {
-
+const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, $window) => {
   // Constans.
-  const _transformers = {}, _converters = {}, _widgets = {}, _toolset = [], _widgetsMenu = [];
+  const _transformers = {}, _converters = {}, _widgets = {}, _toolset = [], _widgetsMenu = [],
+  _bucket = utils.bucket(), _pubsub = PubSub(), _outputNodes = new WeakMap();
   // locsls.
-  let _mammothOpts;
+  let _mammothOpts, _docxElements;
+  // Flags.
+  let isShift = false, isCtrl = false;
+  // Flux Events.
+  const _events = {
+    initializationEnded: 'initializationEnded',
+    errorReported: 'errorReported',
+    docxParsed: 'docxParsed',
+    contetOrderChanged: 'contetOrderChanged',
+    transformationEillStart: 'transformationEillStart',
+    transformationEnded: 'transformationEnded',
+    convertionWillStart: 'convertionWillStart',
+    convertionEnded: 'convertionEnded'
+  };
 
   // ---- INSTALLATORS ----------------
 
@@ -19,7 +32,7 @@ const Flux = ((utils, t5, Sortable, Pscroll, Mammoth, MathJax, $window) => {
           icon: transformer.icon,
           name: transformer.name
         });
-        _transformers[_name] = transformer;
+        _transformers[_name] = transformer.format(_pubsub);
       }
     });
   };
@@ -29,7 +42,7 @@ const Flux = ((utils, t5, Sortable, Pscroll, Mammoth, MathJax, $window) => {
     plugs.forEach(converter => {
        converter.match.split(',').forEach(name => {
          const _name = name.trim();
-          _converters[_name] = converter
+          _converters[_name] = converter;
        });
      });
   };
@@ -45,16 +58,43 @@ const Flux = ((utils, t5, Sortable, Pscroll, Mammoth, MathJax, $window) => {
           icon: widget.icon,
           name: widget.name
         });
-        _widgets[_name] = widget.init();
+        _widgets[_name] = widget.init(_pubsub);
       }
     });
   };
 
   // ---- CLICK HANDLERS -------------------
 
-  // Handle actions within `content`.
+  // Handle items selection.
   const docxHandler = (event) => {
+    // Do not selcet perfect-scrollbar's containers.
+    if (event.target.matches('div.docx.ps-container')) return;
 
+    if (isShift) {
+      // Select range of elements.
+      _bucket.addMany(event.target);
+      if (_bucket.content().length === 2) {
+        let startIndex = _docxElements.indexOf(_bucket.content()[0]);
+        let endIndex = _docxElements.indexOf(_bucket.content()[1]);
+        _bucket.clean();
+        if (startIndex < endIndex) {
+          for (let i = startIndex; i < endIndex + 1; i++) {
+            _bucket.addMany(_docxElements[i]);
+          }
+        }
+        else {
+          for (let i = startIndex; i > endIndex - 1; i--) {
+            _bucket.addMany(_docxElements[i]);
+          }
+          _bucket.reverse();
+        }
+      }
+    }
+    // Select multiple OR single element.
+    else {
+      isCtrl ? _bucket.addMany(event.target) : _bucket.addOne(event.target);
+    }
+    console.log(_bucket.content()); // Debug.
   };
 
   // Start .docx processing.
@@ -66,10 +106,30 @@ const Flux = ((utils, t5, Sortable, Pscroll, Mammoth, MathJax, $window) => {
     reader.readAsArrayBuffer(event.target.files[0]);
   };
 
-  // Run proper transformer.
+  // Run selected transformation.
   const toolboxHandler = (event) => {
-    if (event.target.dataset && event.target.dataset.action) {
-      console.log('Transformer', event.target.dataset.action);
+    if (event.target.dataset && event.target.dataset.action && _bucket.content().length > 0) {
+      try {
+        // Send notification.
+        _pubsub.publish(_events.transformationEillStart);
+        // Find right transformer to run.
+        const transform = _transformers[event.target.dataset.action](_bucket.content());
+        // Replace nodes in preview.
+        const cnversionHandle = utils.replaceNodes(_bucket.content(), transform.dom);
+        // Add globaly avilabele mapping between element DOM & COM --> Imporove element search.
+        if (transform.com && !_outputNodes.has(cnversionHandle)) _outputNodes.set(cnversionHandle, transform.com);
+      } catch (error) {
+        // Send notification.
+        _pubsub.publish(_events.errorReported, {error});
+        // Hendle error.
+        console.error(error);
+      }
+      // Clear selection bucket.
+      _bucket.clean();
+      // Update `_docxElements` after each successful transformation.
+      _docxElements = Array.from(_docx.children);
+      // Send notification.
+      _pubsub.publish(_events.transformationEnded, _docxElements);
     }
   };
 
@@ -91,36 +151,58 @@ const Flux = ((utils, t5, Sortable, Pscroll, Mammoth, MathJax, $window) => {
 
   // Deal with keyDown evnet.
   const keyDownHandler = (event) => {
-    isShift = event.shiftKey
+    isShift = event.shiftKey;
+    isCtrl = event.ctrlKey;
   };
 
   // Deal with keyUp evnet.
   const keyUpHandler = (event) => {
-    isShift = event.shiftKey
+    isShift = event.shiftKey;
+    isCtrl = event.ctrlKey;
   };
+
+  // ---- MIXED HANDLERS -----------------
+
+
 
   // ---- DOCX PROCESSING ----------------
 
   const processDOCXFile = (buffer) => {
     Mammoth.convertToHtml({ arrayBuffer: buffer }, _mammothOpts).then((result) => {
       _docx.innerHTML = result.value;
-      _sortable = Sortable.create(_docx);
+      _sortable = Sortable.create(_docx, {
+        onEnd (event) {
+          // Reorder elements in _docxElements.
+          utils.swapItems(_docxElements, event.newIndex, event.oldIndex);
+          // Send notification.
+          _pubsub.publish(_events.contetOrderChanged, _docxElements);
+         }
+      });
 
       // Log messages.
       result.messages.forEach((message) => console.log(message.message));
-
       // Apply order identifiers for _docx nodes.
       _docxElements = Array.from(_docx.children);
-      // Tag DOCX children with `flux-type`.
-      // !!IMPORTANT!! Only elements with this tag will be converted.
-      _docxElements.forEach((element, index) => element.dataset.fluxType = 'default');
 
+      // Tag DOCX children.
+      _docxElements.forEach((element, index) => {
+        // Add `flux-type` attribute. Only elements with this tag will be converted.
+        element.dataset.fluxType = 'default';
+        // Add `flux-order` attribute. This will help with sorting.
+        element.dataset.fluxOrder = index;
+      });
       // Convert Match sumbols.
       Array.from(document.querySelectorAll('.math')).map((eq, index) => eq.innerHTML = `$${eq.innerHTML}$`);
       MathJax.Hub.Typeset();
-      
+
+      // Send notification.
+      _pubsub.publish(_events.docxParsed, _docxElements);
     }).done();
   };
+
+  // ---- PUBSUB LISTENERS ----------
+
+
 
   // ---- INITIALIZE ----------------
 
@@ -173,7 +255,7 @@ const Flux = ((utils, t5, Sortable, Pscroll, Mammoth, MathJax, $window) => {
       throw new Error('Uwaga! Proces zatrzymany. Barak jednego z wymaganych kontenerwow interfejsu.');
 
     // Set scrollbars from PerfectScroll lib.
-    Pscroll.initialize(_docx);
+    Pscroll.initialize(_docx.parentNode, { suppressScrollX: true });
 
     // Add upload block.
     _docx.appendChild(_upload);
@@ -188,8 +270,11 @@ const Flux = ((utils, t5, Sortable, Pscroll, Mammoth, MathJax, $window) => {
     // Keyboard hendlers.
     $window.addEventListener('keyup', keyUpHandler);
     $window.addEventListener('keydown', keyDownHandler);
+
+    // Finalize - send notification.
+    _pubsub.publish(_events.initializationEnded);
   };
 
   // Public API.
   return { init }
-})(FluxUtils2, t5, Sortable, Ps, mammoth, MathJax, window);
+})(FluxUtils2, t5, PubSub, Sortable, Ps, mammoth, MathJax, window);

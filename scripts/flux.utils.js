@@ -15,6 +15,37 @@ const FluxUtils2 = (() => {
     return result;
   };
 
+  // ---- Create DOM element from JSON ----------------
+  /*
+    const element = {
+      type: 'div.classname',
+      content: 'Lorem ispum dolor sit amet.' || { element },
+      attrs: [ ['name', 'value'], ... ],
+      dataset: [ ['camelCaseName', 'value'], ... ],
+    }
+  */
+  const createElementWOL = ({ type, content, attrs, dataset }) => {
+    let classes = ~type.indexOf('.') ? type.split('.') : undefined;
+    if (classes) {
+      type = classes[0];
+      classes = classes.slice(1,classes.length).join(' ');
+    }
+    const element = document.createElement(type);
+    if (content) {
+      if (typeof content === 'string') {
+        element.innerHTML = content ;
+      }
+      else {
+        if (!Array.isArray(content)) content = [content];
+        element.innerHTML = content.reduce((result, subElement) => result += createElement2(subElement).outerHTML, '');
+      }
+    }
+    if (attrs) attrs.forEach(attribute => element.setAttribute(attribute[0], attribute[1]));
+    if (dataset) dataset.forEach(data => element.dataset[data[0]] = data[1]);
+    if (classes) element.className = classes;
+    return element;
+  };
+
   // ---- Remove all HTML tags, leaves only Text content ----------------
   const strip = (elemnt) =>  elemnt.innerHTML.replace(/(<([^>]+)>)/ig, '').trim();
 
@@ -70,13 +101,68 @@ const FluxUtils2 = (() => {
     return cnversionHandle;
   };
 
+  // Bucket for item to ptrocess.
+  const bucket = () => {
+    let _content = [];
+
+    // Get bucket content.
+    const content = () => _content;
+
+    // Get bucket content.
+    const reverse = () => _content.reverse();
+
+    // Add only one item.
+    const addOne = (item, cleanUp = true) => {
+      if (!~_content.indexOf(item)) {
+        if(cleanUp) clean();
+        _content.push(item);
+        item.classList.add('selected');
+      } else {
+        clean(item);
+      }
+    };
+
+    // Add many items.
+    const addMany = (item) => addOne(item, false);
+
+    // Clean all item or just one.
+    const clean = (remove) => {
+      if (remove) {
+        let removeIndex = _content.indexOf(remove);
+        if (removeIndex > -1) {
+          _content[removeIndex].classList.remove('selected');
+          _content.splice(removeIndex, 1);
+        }
+      } else {
+        _content.forEach(element => element.classList.remove('selected'));
+        _content = [];
+      }
+    };
+
+    // API.
+    return { content, clean, addOne, addMany, reverse };
+  };
+
   // ---- While error detected report parametres of element for debuging ----------------
   const reportElement = (element) => {
     return element.innerHTML.slice(0,25);
   };
 
+  // ---- Get index of a child in element ----------------
+  const getChildIndex = (element, child) => {
+    const index = Array.from(element.children).indexOf(child);
+    return index > -1 ? index : undefined;
+  }
+
+  // Swap arrays elements.
+  const swapItems = (array, indexA, indexB) => {
+    let buffer = array[indexA];
+    array[indexA] = array[indexB];
+    array[indexB] = buffer;
+  };
+
   // Public API.
-  return { createElement, strip, replaceNodes, getUID, getRandomInt, reportElement };
+  return { createElement, createElementWOL, strip, replaceNodes, getUID, getRandomInt, reportElement, bucket, getChildIndex, swapItems };
 })();
 
 

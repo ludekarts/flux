@@ -22,7 +22,9 @@
   <!-- MathJax.js -->
   <script src="bower_components/MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
   <!-- T5 Templates -->
-  <script src="vendors/T5.js" charset="utf-8"></script>
+  <script src="vendors/T5.js"></script>
+  <!-- PubSub -->
+  <script src="scripts/pubsub.js"></script>
 </head>
 <body>
   <div class="flux">
@@ -84,13 +86,13 @@
       ],
       transform: [
         title,
-        // heading,
-        // paragraph,
+        heading,
+        paragraph,
         figure,
-        // exercise,
-        // definition,
-        // cut,
-        // remove
+        exercise,
+        definition,
+        cut,
+        remove
       ],
       widgets : [
         colections,
@@ -101,7 +103,10 @@
         // generator
       ]
     });
+
+  
   </script>
+
 </body>
 </html>
 

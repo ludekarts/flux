@@ -14,10 +14,8 @@ const colections = (() => {
     name: 'colections',
     icon: '<i class="material-icons">view_day</i>',
     tooltip: 'Kolekcje',
-    init (subscribe, dispatch) {
-      return (context) => {
-        console.log('Hello I am Collection', context);
-      }
+    init ({subscribe, publish}) {
+      console.log('Hello I am Collection');      
     }
   }
 })();

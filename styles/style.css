@@ -205,12 +205,40 @@ button {
 	background: rgba(195, 28, 230, 0.5);
 }
 
+/* .docx verification stripes */
+.content .docx > *.verified {
+	border-left: 3px solid #4ecb4e;
+	padding-left: 5px;
+	margin-left: -8px;
+}
+
+.content .docx > *.no-converter {
+	border-left: 3px solid #e91743;
+	padding-left: 5px;
+	margin-left: -8px;
+}
+
+.content .docx > *.no-converter:after {
+	content: 'NO CONVERTER';
+	top: 0px;
+	left: 0px;
+	width: 85px;
+	color: white;
+	display: block;
+	font-size: 10px;
+	font-weight: bold;
+	position: absolute;
+	background: #e91743;
+	font-family: sans-serif;
+}
+
 /* Glass cover */
 .content .docx > *:before {
 	content: ' ';
-	display: block;
+	z-index: 10;
 	width: 100%;
 	height: 100%;
+	display: block;
 	position: absolute;
 	background: rgba(0, 0, 0, 0);
 }
