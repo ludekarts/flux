@@ -1,13 +1,22 @@
 
-// ---- TITLE --------------------
+// ---- SECTION --------------------
 
 // Convert @elements into CNXML Heading.
 const CNXTitle = (() => {
-  const template = ({ content }) => `<title id="#%UID%#">${content}</title>`;
+  const template = ({ content }) => `<section id="#%UID%#"><title id="#%UID%#">${content}</title>`;
   return {
     match: 'h1.title',
     convert (element) {
       return template(element);
+    }
+  }
+})();
+
+const CNXTitleEnd = (() => {
+  return {
+    match: 'div.fluxHandle',
+    convert (element) {
+      return '</section>';
     }
   }
 })();

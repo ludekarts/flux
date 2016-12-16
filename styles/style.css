@@ -167,7 +167,7 @@ button {
 	position: relative;
 
 	margin-left: 60px;
-	margin-right: 380px;
+	margin-right: 420px;
 	border-right: 1px solid #D4D4D4;
 }
 
@@ -176,7 +176,7 @@ button {
 	display: block;
 	position: relative;
 
-	width: 380px;
+	width: 420px;
 	float: right;
 }
 
@@ -198,7 +198,7 @@ button {
 }
 
 .content .docx > *:hover {
-	background: rgba(28, 157, 230, 0.49);
+	background: rgba(28, 157, 230, 0.3);
 }
 
 .content .docx > *.selected {
@@ -287,7 +287,7 @@ button {
 
 .composer__header__menu button.active {
 	font-weight: bold;
-	color: #d7d7d7;
+	color: #f40c4b;
 
 	background: #d7d7d7;
 	background: -moz-linear-gradient(top,  #d7d7d7 94%, #f40c4b 94%);
@@ -404,7 +404,7 @@ button {
 
 /* HANDLER */
 
-div[data-flux-handle] {
+div.fluxHandle {
 	font-family: sans-serif;
 	border-radius: 20px;
 	position: relative;
@@ -415,7 +415,11 @@ div[data-flux-handle] {
 	color: #333;
 }
 
-div[data-flux-handle]:after {
+div.fluxHandle.collection-error {
+	color: red;
+}
+
+div.fluxHandle:after {
 	top: 0;
 	width: 20px;
 	right: 10px;
@@ -426,26 +430,61 @@ div[data-flux-handle]:after {
 	position: absolute;
 }
 
+/* MODAL */
 
-/* OPTIONS
+div[data-flux="modal"] {
+	top: 20px;
+	left:20px;
+	z-index: -1;
+	right: 20px;
+	bottom: 20px;
+	padding: 15px;
+	display: none;
+	position: fixed;
+	border-radius: 10px;
+	background: #232635;
 
-input {
-  border: none;
-  width: 100%;
-	color: #666;
-  font-size: 14px;
-  background: none;
-  padding: 15px 0 5px 0;
-  border-bottom: 1px solid #999;
+}
+div[data-flux="modal"] > textarea {
+	width: 100%;
+	height: 100%;
+	border: none;
+	color: #f1bd06;
+	font-size: 12px;
+	background: none;
+	font-family: 'Courier New', sans-serif;
 }
 
-label {
-  color: #232635;
-  font-size: 11px;
-  font-family: sans-serif;
+div[data-flux="modal"].on {
+	display: block;
+	z-index: 300;
 }
 
-.figure-opts li {
-  margin: 20px 0 35px 0;
+/* MARKSES */
+
+.dotMarker {
+	width: 17px;
+	height: 17px;
+	border-radius: 50%;
+	vertical-align: sub;
+	display: inline-block;
 }
- */
+
+.stripeMarker {
+	border-left: 3px solid;
+	padding-left: 3px;
+	margin-left: -6px;
+}
+
+/* WIDGETS */
+
+.widget-list {
+	list-style: none;
+}
+
+.widget-list .widget-card {
+	padding: 5px;
+	list-style: none;
+	background: none;
+	border-bottom: 1px solid #cdcdcd;
+}

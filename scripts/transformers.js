@@ -4,20 +4,37 @@
 // ---- TITLE --------------------
 
 // Transform @elements into HTML Title.
-const title = (({strip, createElement}) => {
+const title = (({strip, uid, createElementWOL, randomColor}) => {
   return {
     name: 'title',
     tooltip: 'Tytuł',
     icon: '<i class="material-icons">title</i>',
     format ({subscribe, publish}) {
       return (elements) => {
+        const id = uid();
+        const color = randomColor();
         const com = { content: elements.reduce((result, element) => result += ' ' + strip(element), '') };
-        const handle = 'Koniec sekcji: ' +  com.content.slice(0,25) + '...';
-        return { com, dom: createElement('h1.title', com.content, 'title', handle) }
+        const dom = [
+          createElementWOL({
+            type: 'h1.title.stripeMarker',
+            content: com.content,
+            dataset: [['fluxType','title']],
+            attrs: [['id', 'head_' + id], ['style', 'border-color:' + color]]
+          }),
+          createElementWOL({
+            type: 'div.fluxHandle',
+            content: `<span class="dotMarker" style="background:${color}"></span> Koniec sekcji: ${com.content.slice(0,25)}...`,
+            attrs: [['id', 'tail_' + id]],
+            dataset: [['fluxType','fluxHandle']],
+          })
+        ];
+        // Setd notification (to widget).
+        publish('registerCollection', { id, head: dom[0], tail: dom[1], color });
+        return { com, dom }
       }
     }
   }
-})(FluxUtils);
+})(FluxUtils2);
 
 
 // ---- HEADING --------------------
@@ -132,7 +149,7 @@ const figure = (({strip, createElement}) => {
         return {
           dom: Array.from(createElement('div', template(com.title, com.src, com.caption)).children),
           com : {
-            src: 'imeges/1.jpeg',
+            src: 'BTTF_Cover.jpg',
             title: (com.title.trim().length > 0 ? com.title.trim() : undefined),
             caption: (com.caption.trim().length > 0 ? com.caption.trim() : undefined),
           }
@@ -166,7 +183,7 @@ const exercise = (({strip, createElement}) => {
         const com = {
           label: elements[0].innerHTML,
           problem: elements[1].innerHTML,
-          solution: elements[2] ? _solutions(elements[2].innerHTML) : ''
+          solution: elements[2] ? _solution(elements[2].innerHTML) : ''
         };
         return { com, dom: createElement('div.exercise', template(com), 'exercise') }
       }

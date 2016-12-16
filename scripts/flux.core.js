@@ -1,10 +1,10 @@
 // FLUX CORE v 0.0.5 by Wojciech Ludwin, ludekarts@gmail.com.
-const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, $window) => {
+const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, cnxmlModule, $window) => {
   // Constans.
   const _transformers = {}, _converters = {}, _widgets = {}, _toolset = [], _widgetsMenu = [],
   _bucket = utils.bucket(), _pubsub = PubSub(), _outputNodes = new WeakMap();
   // locsls.
-  let _mammothOpts, _docxElements;
+  let _mammothOpts, _docxElements, _activeWidget, _modal, _activeWidgetBtn;
   // Flags.
   let isShift = false, isCtrl = false;
   // Flux Events.
@@ -12,11 +12,13 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, $window) 
     initializationEnded: 'initializationEnded',
     errorReported: 'errorReported',
     docxParsed: 'docxParsed',
-    contetOrderChanged: 'contetOrderChanged',
+    contetChanged: 'contetChanged',
+    contentOrderChanged: 'contentOrderChanged',
     transformationEillStart: 'transformationEillStart',
     transformationEnded: 'transformationEnded',
     convertionWillStart: 'convertionWillStart',
-    convertionEnded: 'convertionEnded'
+    convertionEnded: 'convertionEnded',
+    widgetSelected: 'widgetSelected'
   };
 
   // ---- INSTALLATORS ----------------
@@ -58,6 +60,7 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, $window) 
           icon: widget.icon,
           name: widget.name
         });
+        // Register widget template with access to comuncation pipe.
         _widgets[_name] = widget.init(_pubsub);
       }
     });
@@ -94,7 +97,7 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, $window) 
     else {
       isCtrl ? _bucket.addMany(event.target) : _bucket.addOne(event.target);
     }
-    console.log(_bucket.content()); // Debug.
+    // console.log(_bucket.content()); // Debug.
   };
 
   // Start .docx processing.
@@ -129,14 +132,26 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, $window) 
       // Update `_docxElements` after each successful transformation.
       _docxElements = Array.from(_docx.children);
       // Send notification.
-      _pubsub.publish(_events.transformationEnded, _docxElements);
+      _pubsub.publish(_events.transformationEnded, _docxElements).publish(_events.contetChanged);
     }
   };
 
-  // Handle widget change actions.
+
+  // Select active widget.
   const composerHandler = (event) => {
-    if (event.target.dataset && event.target.dataset.action) {
-      console.log('Composer widget', event.target.dataset.action);
+
+    if (_activeWidgetBtn) _activeWidgetBtn.classList.remove('active');
+
+    _activeWidgetBtn = event.target;
+    _activeWidgetBtn.classList.add('active');
+
+    if (_activeWidgetBtn.dataset && _activeWidgetBtn.dataset.action) {
+      if (_activeWidgetBtn.dataset.action === 'more') {
+        convertHandler();
+      } else {
+        _activeWidget = _widgets[_activeWidgetBtn.dataset.action];
+        renderWidgets();
+      }
     }
   };
 
@@ -159,25 +174,68 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, $window) 
   const keyUpHandler = (event) => {
     isShift = event.shiftKey;
     isCtrl = event.ctrlKey;
+
+    if (event.keyCode === 27) {
+      _modal.classList.remove('on');
+    }
   };
 
   // ---- MIXED HANDLERS -----------------
 
+  // Render active widget.
+  const renderWidgets = () => {
+    if (_activeWidget) {
+      if (_widget.children.length > 0) utils.removeChildren(_widget);
+      _widget.appendChild(_activeWidget);
+    }
+  };
 
+  // Reorder elements in _docxElements.
+  const reorderContent = (event) => {
+    _docxElements = Array.from(_docx.children);
+    // Send notification.
+    _pubsub.publish(_events.contentOrderChanged, _docxElements);
+  };
+
+  // Get converter for element helper.
+  const getConverterFor = (element) => {
+    const type = element.dataset.fluxType;
+    return type ? _converters[element.tagName.toLowerCase() + (type === 'default' ? '' : '.' + type)] : undefined;
+  };
+
+  // Convert to CNXML.
+  const convertHandler = (event) => {
+    const hash = "KED-PHY-";
+    const output = Array.from(_docx.children).reduce((result, element) => {
+      // Parse only elements with `flux-type` attribute.
+      const converter = getConverterFor(element);
+      if (converter){
+        try {
+          result += converter.convert(_outputNodes.get(element) || { content : element.innerHTML });
+        } catch (e) {
+          console.warn(`Błąd konwertera ${element.tagName.toLowerCase()}.${element.dataset.fluxType}! Element zostanie pominięty`);
+        }
+      }
+      else {
+        console.warn(`Element otagowany jako "${utils.reportElement(element)}" nie posiada konwertera`);
+      }
+      return result;
+    },'')
+    // Add Unique Identifiers.
+    // TODO: Add better hashes.
+    .replace(/#%UID%#/g, (a, b) => hash + b);
+
+    console.log(output);
+    _modal.querySelector('textarea').value = cnxmlModule(output);
+    _modal.classList.add('on');
+  };
 
   // ---- DOCX PROCESSING ----------------
 
   const processDOCXFile = (buffer) => {
     Mammoth.convertToHtml({ arrayBuffer: buffer }, _mammothOpts).then((result) => {
       _docx.innerHTML = result.value;
-      _sortable = Sortable.create(_docx, {
-        onEnd (event) {
-          // Reorder elements in _docxElements.
-          utils.swapItems(_docxElements, event.newIndex, event.oldIndex);
-          // Send notification.
-          _pubsub.publish(_events.contetOrderChanged, _docxElements);
-         }
-      });
+      _sortable = Sortable.create(_docx, { onEnd: reorderContent });
 
       // Log messages.
       result.messages.forEach((message) => console.log(message.message));
@@ -189,20 +247,21 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, $window) 
         // Add `flux-type` attribute. Only elements with this tag will be converted.
         element.dataset.fluxType = 'default';
         // Add `flux-order` attribute. This will help with sorting.
-        element.dataset.fluxOrder = index;
+        // element.dataset.fluxOrder = index;
       });
       // Convert Match sumbols.
       Array.from(document.querySelectorAll('.math')).map((eq, index) => eq.innerHTML = `$${eq.innerHTML}$`);
       MathJax.Hub.Typeset();
 
       // Send notification.
-      _pubsub.publish(_events.docxParsed, _docxElements);
+      _pubsub.publish(_events.docxParsed, _docxElements).publish(_events.contetChanged)
+      .publish('parseDocx', _docx);
     }).done();
   };
 
   // ---- PUBSUB LISTENERS ----------
 
-
+  _pubsub.subscribe(_events.contetChanged, renderWidgets);
 
   // ---- INITIALIZE ----------------
 
@@ -243,6 +302,7 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, $window) 
 
     // Get all DOM references for FLUX elements.
     _docx = document.querySelector('[data-flux="docx"]');
+    _modal = document.querySelector('[data-flux="modal"]');
     _widget = document.querySelector('[data-flux="widget"]');
     _toolbox = document.querySelector('[data-flux="toolbox"]');
     _composer = document.querySelector('[data-flux="composer"]');
@@ -251,7 +311,7 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, $window) 
     _toolbox.innerHTML = t5.render('toolbox', { toolset: _toolset });
 
     // Chek for UI containers.
-    if (!(_docx && _widget && _toolbox && _composer))
+    if (!(_docx && _modal && _widget && _toolbox && _composer))
       throw new Error('Uwaga! Proces zatrzymany. Barak jednego z wymaganych kontenerwow interfejsu.');
 
     // Set scrollbars from PerfectScroll lib.
@@ -277,4 +337,4 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, $window) 
 
   // Public API.
   return { init }
-})(FluxUtils2, t5, PubSub, Sortable, Ps, mammoth, MathJax, window);
+})(FluxUtils2, t5, PubSub, Sortable, Ps, mammoth, MathJax, cnxmlModule, window);

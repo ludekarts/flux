@@ -15,7 +15,7 @@ const FluxUtils2 = (() => {
     return result;
   };
 
-  // ---- Create DOM element from JSON ----------------
+  // ---- Create DOM element from Object Literal ------------
   /*
     const element = {
       type: 'div.classname',
@@ -37,7 +37,7 @@ const FluxUtils2 = (() => {
       }
       else {
         if (!Array.isArray(content)) content = [content];
-        element.innerHTML = content.reduce((result, subElement) => result += createElement2(subElement).outerHTML, '');
+        element.innerHTML = content.reduce((result, subElement) => result += createElementWOL(subElement).outerHTML, '');
       }
     }
     if (attrs) attrs.forEach(attribute => element.setAttribute(attribute[0], attribute[1]));
@@ -50,18 +50,22 @@ const FluxUtils2 = (() => {
   const strip = (elemnt) =>  elemnt.innerHTML.replace(/(<([^>]+)>)/ig, '').trim();
 
   // ---- Get random value from range ------------
-  const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+  // ---- Prodice random HEX Color code ----------
+  const randomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16);
+
 
   // ---- Creates unique 8-chars IDs --------------
   const cache = [];
   const chars = '23456789abdegjkmnpqrvwxyz';
   const generateKey = () => {
     let result = '';
-    for (let i = 0; i < 8; i++) result += this.chars.charAt(Math.floor(Math.random() * 25));
+    for (let i = 0; i < 8; i++) result += chars.charAt(Math.floor(Math.random() * 25));
     return result;
   };
 
-  const getUID = () => {
+  const uid = () => {
     let id, retries = 0;
     while(!id && retries < 9999) {
       id = generateKey();
@@ -72,14 +76,6 @@ const FluxUtils2 = (() => {
     }
     cache.push(id);
     return id;
-  };
-
-  // ---- Create Wrapper Handle ----------------
-  const createWrapperHandle = (content, id) => {
-    const handle = document.createElement('div');
-    handle.dataset.fluxHandle = id;
-    handle.innerHTML = content;
-    return handle;
   };
 
   // ---- Replace @nodeList with @newNode ----------------
@@ -101,7 +97,7 @@ const FluxUtils2 = (() => {
     return cnversionHandle;
   };
 
-  // Bucket for item to ptrocess.
+  // ---- Bucket for item to ptrocess ----------------
   const bucket = () => {
     let _content = [];
 
@@ -154,15 +150,25 @@ const FluxUtils2 = (() => {
     return index > -1 ? index : undefined;
   }
 
-  // Swap arrays elements.
+  // ---- Swap arrays elements ---------------------------
   const swapItems = (array, indexA, indexB) => {
     let buffer = array[indexA];
     array[indexA] = array[indexB];
     array[indexB] = buffer;
   };
 
+  // ---- Remove all child nodes from the tree -----------
+  const removeChildren = (node) => {
+    while (node.lastChild) {
+      node.removeChild(node.lastChild);
+    };
+  }
+
   // Public API.
-  return { createElement, createElementWOL, strip, replaceNodes, getUID, getRandomInt, reportElement, bucket, getChildIndex, swapItems };
+  return {
+    createElement, createElementWOL, strip, replaceNodes, uid, randomInt,
+    randomColor, reportElement, bucket, getChildIndex, swapItems, removeChildren
+  };
 })();
 
 
