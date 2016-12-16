@@ -54,7 +54,7 @@ const heading = (({strip}) => {
       }
     }
   }
-})(FluxUtils);
+})(FluxUtils2);
 
 
 // ---- PARAGRAPH ------------------
@@ -74,7 +74,7 @@ const paragraph = (({strip, createElement}) => {
       }
     }
   }
-})(FluxUtils);
+})(FluxUtils2);
 
 
 // ---- CUT ---------------------
@@ -157,7 +157,7 @@ const figure = (({strip, createElement}) => {
       }
     }
   }
-})(FluxUtils);
+})(FluxUtils2);
 
 
 // ---- EXERCISE ------------------
@@ -189,7 +189,7 @@ const exercise = (({strip, createElement}) => {
       }
     }
   }
-})(FluxUtils);
+})(FluxUtils2);
 
 
 
@@ -213,4 +213,4 @@ const definition = (({createElement}) => {
       }
     }
   }
-})(FluxUtils);
+})(FluxUtils2);

@@ -38,7 +38,7 @@ const colections = (({ createElementWOL }, t5) => {
     const reference = createItem(collection.id, collection.head.innerHTML, collection.color);
     _collections.push(collection);
     _model.push(reference);
-    template.appendChild(reference)
+    template.appendChild(reference);
   };
 
   // Arange collcerions.
@@ -126,7 +126,7 @@ const figures = (({ createElementWOL }, t5) => {
   };
 
   const init = ({subscribe, publish}) => {
-    subscribe('parseDocx', fetchImages);
+    subscribe('docxParsed', fetchImages);
     return template;
   };
 

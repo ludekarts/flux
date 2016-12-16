@@ -2,6 +2,7 @@ const FluxUtils2 = (() => {
 
   // ---- Create DOM element ----------------
   const createElement = (type, content, fluxType, isWrapper) => {
+    console.warn('createElement() method will depracased soon! Try to use createElementWOL() instead.');
     let classes = ~type.indexOf('.') ? type.split('.') : undefined;
     if (classes) {
       type = classes[0];
@@ -148,7 +149,7 @@ const FluxUtils2 = (() => {
   const getChildIndex = (element, child) => {
     const index = Array.from(element.children).indexOf(child);
     return index > -1 ? index : undefined;
-  }
+  };
 
   // ---- Swap arrays elements ---------------------------
   const swapItems = (array, indexA, indexB) => {
@@ -162,35 +163,39 @@ const FluxUtils2 = (() => {
     while (node.lastChild) {
       node.removeChild(node.lastChild);
     };
-  }
+  };
+
+  // ---- Helps with event delegation --------------------
+  // USAGE:
+  // let destroy = eventDelegate('button.one', 'click', () => {}, element);
+  // destroy(); At the end, it'll remove the listener.
+  const eventDelegate = (selector, event, callback, context = document) => {
+    let id = selector + '_' + event;
+    if (!context.__EventDelegates__) context.__EventDelegates__ = {};
+    if (context.__EventDelegates__[id]) throw new Error (`Current context already have an eventListener for a selector: "${selector}" for "${event}" event.`);
+    // Handle match selector.
+    let handle = (event) => {
+      let found;
+      if (found = event.target.closest(selector)) {
+        callback.call(found, event);
+      }
+    };
+    // Remmember refeerence for detach action.
+    context.__EventDelegates__[id] = handle;
+    // Add Event listener.
+    context.addEventListener(event, handle);
+    // Return destory handle.
+    return () => {
+      context.removeEventListener(event, handle);
+      context.__EventDelegates__[id] = undefined;
+      handle = undefined;
+    };
+  };
 
   // Public API.
   return {
     createElement, createElementWOL, strip, replaceNodes, uid, randomInt,
-    randomColor, reportElement, bucket, getChildIndex, swapItems, removeChildren
+    randomColor, reportElement, bucket, getChildIndex, swapItems, removeChildren,
+    eventDelegate
   };
 })();
-
-
-// -------------------------------------------------------
-const FluxUtils = {
-  // Create DOM element.
-  createElement (type, content, fluxType, isWrapper) {
-    let classes = ~type.indexOf('.') ? type.split('.') : undefined;
-    if (classes) {
-      type = classes[0];
-      classes = classes.slice(1,classes.length).join(' ');
-    }
-    const result = document.createElement(type);
-    if (classes) result.className = classes;
-    if (content) result.innerHTML = content;
-    if (fluxType) result.dataset.fluxType = fluxType;
-    if (isWrapper) result.dataset.fluxHandle = isWrapper;
-    return result;
-  },
-
-  // Remove all HTML tags, leaves only Text content.
-  strip(elemnt) {
-    return elemnt.innerHTML.replace(/(<([^>]+)>)/ig, '').trim();
-  }
-};

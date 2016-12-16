@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Event</title>
+</head>
+<body>
+
+<section id="container">
+  <button class="one">Button 1</button>
+  <button class="two">Button 2</button>
+  <button class="thre">Button 3</button>
+</section>
+
+  <script type="text/javascript">
+
+  // USAGE: let destroy = eventDelegate('button.one', 'click', () => {}, element);
+  // At the end -> destroy(); Removes listener.
+  const eventDelegate = (selector, event, callback, context = document) => {
+    let id = selector + '_' + event;
+    if (!context.__EventDelegates__) context.__EventDelegates__ = {};
+    if (context.__EventDelegates__[id]) throw new Error (`Current context already have an eventListener for a selector: "${selector}" for "${event}" event.`);
+    // Handle match selector.
+    let handle = (event) => {
+      let found;
+      if (found = event.target.closest(selector)) {
+        callback.call(found, event);
+      }
+    };
+    // Remmember refeerence for detach action.
+    context.__EventDelegates__[id] = handle;
+    // Add Event listener.
+    context.addEventListener(event, handle);
+    // Return destory handle.
+    return () => {
+      context.removeEventListener(event, handle);
+      context.__EventDelegates__[id] = undefined;
+      handle = undefined;
+    };
+  };
+
+
+  const container = document.getElementById('container');
+
+  let A = eventDelegate('button.one' , 'click', event => console.log('clicked'), container);
+  let B = eventDelegate('button.one' , 'dblclick', event => console.log('dblclicked'), container);
+  let C = eventDelegate('button.two' , 'mouseover', event => console.log('mouseover'), container);
+  let D = eventDelegate('button.thre' , 'mousedown', event => console.log('mousedown'), container);
+
+  window.addEventListener('keydown', event => {
+    if (event.keyCode === 27) {
+      A(); B(); C(); D();
+      A = eventDelegate('button.one' , 'click', event => console.log('clicked'), container);
+      console.log('clean', container.__EventDelegates__);
+    }
+  });
+
+
+  </script>
+</body>
+</html>

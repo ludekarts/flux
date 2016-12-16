@@ -254,8 +254,7 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, cnxmlModu
       MathJax.Hub.Typeset();
 
       // Send notification.
-      _pubsub.publish(_events.docxParsed, _docxElements).publish(_events.contetChanged)
-      .publish('parseDocx', _docx);
+      _pubsub.publish(_events.docxParsed, _docx).publish(_events.contetChanged, _docxElements);
     }).done();
   };
 
