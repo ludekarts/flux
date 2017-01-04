@@ -1,0 +1,33 @@
+{
+  "name": "flux",
+  "version": "0.2.0",
+  "description": "UI toll for converting .docx files into CNXML equivalents.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "webpack-dev-server --content-base . --inline --hot",
+    "build": "webpack -p"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/wldesign/flux-converter.git"
+  },
+  "author": "Wojciech Ludwin <ludekarts@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/wldesign/flux-converter#readme",
+  "devDependencies": {
+    "autoprefixer": "^6.6.1",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-stage-2": "^6.18.0",
+    "css-loader": "^0.26.1",
+    "node-sass": "^4.1.1",
+    "postcss-loader": "^1.2.1",
+    "resolve-url-loader": "^1.6.1",
+    "sass-loader": "^4.1.1",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.14.0",
+    "webpack-dev-server": "^1.16.2"
+  }
+}

@@ -2,33 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>FLUX</title>
+  <title>Flux v 0.2.0</title>
   <!-- Import FONTS -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700|Roboto:300,400,500,700&subset=latin-ext"/>
   <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700&amp;subset=latin-ext" rel="stylesheet">
-  <!-- FLUX STYLES -->
-  <link rel="stylesheet" href="styles/style.css"/>
-  <!-- DOCX STYLES -->
-  <link rel="stylesheet" href="styles/docx.css"/>
-  <!-- WIDGETS STYLES -->
-  <link rel="stylesheet" href="styles/widget.css"/>
   <!-- Import ICONS -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
-  <!--  Perfect Scrollbar -->
-  <link rel="stylesheet" href="bower_components/perfect-scrollbar/css/perfect-scrollbar.min.css" />
-  <script src="bower_components/perfect-scrollbar/js/perfect-scrollbar.min.js"></script>
-  <!-- Sortable.js-->
-  <script src="bower_components/Sortable/Sortable.min.js"></script>
-  <!-- Mammoth.js -->
-  <script src="vendors/mammoth.min.js"></script>
-  <!-- MathJax.js -->
-  <script src="bower_components/MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-  <!-- T5 Templates -->
-  <script src="vendors/T5.js"></script>
-  <!-- PubSub -->
-  <script src="scripts/pubsub.js"></script>
 </head>
 <body>
+
   <div class="flux">
 
     <!-- MAIN TOOLBAR -->
@@ -63,60 +44,9 @@
       </div>
     </div>
 
-
   </div>
-
-  <!-- CNXML MODULE SKELETON  -->
-  <script src="scripts/cnxml-temp.js"></script>
-  <!-- Import Flux Utilities -->
-  <script src="scripts/flux.utils.js"></script>
-  <!-- Import Flux Transformers -->
-  <script src="scripts/transformers.js"></script>
-  <!-- Import Flux Widgets -->
-  <script src="scripts/widgets.js"></script>
-  <!-- Import Flux Converters -->
-  <script src="scripts/converters.js"></script>
-  <!-- MAMMOTH Configuration -->
-  <script src="scripts/mammoth.conf.js" charset="utf-8"></script>
   <!-- FLUX Core  -->
-  <!-- <script src="scripts/flux.js" charset="utf-8"></script> -->
-  <script src="scripts/flux.core.js" charset="utf-8"></script>
-  <!-- Startup code -->
-  <script type="text/javascript">
-    Flux.init({
-      mammoth : mammothConfig,
-      convert: [
-        CNXTitle,
-        CNXTitleEnd,
-        CNXHeading,
-        CNXParagraph,
-        CNXEmphasis,
-        CNXExercise,
-        CNXFigure
-      ],
-      transform: [
-        title,
-        heading,
-        paragraph,
-        figure,
-        exercise,
-        definition,
-        cut,
-        remove
-      ],
-      widgets : [
-        colections,
-        figures,
-        // links,
-        equations,
-        // infos,
-        // generator
-      ]
-    });
-
-
-
-  </script>
+  <script src="flux.core.js" charset="utf-8"></script>
 </body>
 </html>
 

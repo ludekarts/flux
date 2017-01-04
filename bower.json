@@ -1,7 +1,7 @@
 {
   "name": "flux",
   "authors": [
-    "ludekarts <ludekarts@gmail.com>"
+    "Wojciech Ludwin <ludekarts@gmail.com>"
   ],
   "description": "",
   "main": "index.html",
@@ -16,7 +16,6 @@
   ],
   "dependencies": {
     "perfect-scrollbar": "^0.6.14",
-    "Sortable": "sortablejs#^1.4.2",
-    "clipboard": "^1.5.16"
+    "Sortable": "sortablejs#^1.4.2"
   }
 }
