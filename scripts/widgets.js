@@ -139,10 +139,97 @@ const figures = (({ createElementWOL }, t5) => {
 })(FluxUtils2, t5);
 
 
+
+// ---- EQUATIONS WIDGRT ----------------
+
+
+const equations = (({ createElementWOL, eventDelegate }, MathJax) => {
+
+  let _host, mathClickHadle;
+  const _triggers = [];
+
+  const editMathInline = (event) => {
+    console.log(event.target.nextSibling.children[2].innerText);
+  };
+
+  const collectMath = (docx) => {
+    mathClickHadle = eventDelegate('span.math-trigger', 'click', editMathInline ,docx)
+    Array.from(docx.querySelectorAll('.math')).map((eq, index) => {
+      return eq.innerHTML = `$${eq.innerHTML}$`;
+    });
+    MathJax.Hub.Typeset();
+  };
+
+  const findMathSiblings = (maths) => {
+    if (maths.length > 0) {
+      let newmath = createElementWOL({ type: 'span.math' });
+      maths[0].parentNode.insertBefore(newmath, maths[0]);
+
+      let merge = maths.reduce((result, math) => {
+        result += math.innerText;
+        math.parentNode.removeChild(math);
+        return result;
+      }, '');
+
+      newmath.innerHTML = `$ ${merge} $`;
+      // Render new node with MathJax.
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub, newmath]);
+    }
+  };
+
+  const resetTriggers = () => {
+    _triggers.forEach(trigger => _host.removeChild(trigger));
+  };
+
+  const checkFofMath = (bucket) => {
+    if (bucket.count() === 1) {
+      
+      _host = bucket.content(0);
+      const maths = Array.from(_host.querySelectorAll('.math'));
+      // findMathSiblings(maths);
+
+      // Add math edit Triggers.
+      if (maths.length > 0) {
+        maths.forEach(element => {
+          let ontop = createElementWOL({ type: 'span.math-trigger'});
+          ontop.style.top = element.offsetTop;
+          ontop.style.left = element.offsetLeft;
+          ontop.style.width = element.offsetWidth + 'px',
+          ontop.style.height = element.offsetHeight + 'px';
+          element.parentNode.insertBefore(ontop, element);
+          _triggers.push(ontop);
+        });
+      }
+    } else {
+      return false;
+    }
+  };
+
+  const init = ({subscribe, publish}) => {
+    // Configure MathJax.
+    MathJax.Hub.Config({
+      showProcessingMessages: false,
+      tex2jax: { inlineMath: [['$','$'],['\\(','\\)']] }
+    });
+
+    subscribe('docxParsed', collectMath).subscribe('elementSelected', checkFofMath);
+
+    return createElementWOL({
+      type: 'div.equations',
+      content: 'Equations'
+    });
+  };
+
+  return {
+    init,
+    name: 'equations',
+    tooltip: 'Rownania',
+    icon: '<i class="material-icons">functions</i>',
+  }
+})(FluxUtils2, MathJax);
+
+
+
 const links ='';
-
-const equations ='';
-
 const infos ='';
-
 const generator ='';

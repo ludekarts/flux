@@ -1,5 +1,5 @@
 // FLUX CORE v 0.0.5 by Wojciech Ludwin, ludekarts@gmail.com.
-const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, cnxmlModule, $window) => {
+const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, cnxmlModule, $window) => {
   // Constans.
   const _transformers = {}, _converters = {}, _widgets = {}, _toolset = [], _widgetsMenu = [],
   _bucket = utils.bucket(), _pubsub = PubSub(), _outputNodes = new WeakMap();
@@ -12,9 +12,10 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, cnxmlModu
     initializationEnded: 'initializationEnded',
     errorReported: 'errorReported',
     docxParsed: 'docxParsed',
+    elementSelected: 'elementSelected',
     contetChanged: 'contetChanged',
     contentOrderChanged: 'contentOrderChanged',
-    transformationEillStart: 'transformationEillStart',
+    transformationWillStart: 'transformationWillStart',
     transformationEnded: 'transformationEnded',
     convertionWillStart: 'convertionWillStart',
     convertionEnded: 'convertionEnded',
@@ -98,6 +99,7 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, cnxmlModu
       isCtrl ? _bucket.addMany(event.target) : _bucket.addOne(event.target);
     }
     // console.log(_bucket.content()); // Debug.
+    _pubsub.publish(_events.elementSelected, _bucket);
   };
 
   // Start .docx processing.
@@ -110,11 +112,11 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, cnxmlModu
   };
 
   // Run selected transformation.
-  const toolboxHandler = (event) => {
+  const toolboxHandler = (event) => {    
     if (event.target.dataset && event.target.dataset.action && _bucket.content().length > 0) {
       try {
         // Send notification.
-        _pubsub.publish(_events.transformationEillStart);
+        _pubsub.publish(_events.transformationWillStart);
         // Find right transformer to run.
         const transform = _transformers[event.target.dataset.action](_bucket.content());
         // Replace nodes in preview.
@@ -191,7 +193,7 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, cnxmlModu
   };
 
   // Reorder elements in _docxElements.
-  const reorderContent = (event) => {
+  const reorderContentHandle = (event) => {
     _docxElements = Array.from(_docx.children);
     // Send notification.
     _pubsub.publish(_events.contentOrderChanged, _docxElements);
@@ -235,7 +237,7 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, cnxmlModu
   const processDOCXFile = (buffer) => {
     Mammoth.convertToHtml({ arrayBuffer: buffer }, _mammothOpts).then((result) => {
       _docx.innerHTML = result.value;
-      _sortable = Sortable.create(_docx, { onEnd: reorderContent });
+      _sortable = Sortable.create(_docx, { onEnd: reorderContentHandle });
 
       // Log messages.
       result.messages.forEach((message) => console.log(message.message));
@@ -249,9 +251,6 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, cnxmlModu
         // Add `flux-order` attribute. This will help with sorting.
         // element.dataset.fluxOrder = index;
       });
-      // Convert Match sumbols.
-      Array.from(document.querySelectorAll('.math')).map((eq, index) => eq.innerHTML = `$${eq.innerHTML}$`);
-      MathJax.Hub.Typeset();
 
       // Send notification.
       _pubsub.publish(_events.docxParsed, _docx).publish(_events.contetChanged, _docxElements);
@@ -270,14 +269,9 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, cnxmlModu
     if (!(t5 && Sortable && Pscroll && Mammoth))
       throw new Error('Uwaga! Proces zatrzymany. Barak wymaganych bibliotek.');
 
-    // Configure MathJax.
-    MathJax.Hub.Config({
-      showProcessingMessages: false,
-      tex2jax: { inlineMath: [['$','$'],['\\(','\\)']] }
-    });
-
     // Configure Mamooth.
     _mammothOpts = mammoth || {};
+
 
     // Add Transformer plugins.
     installTransformers(transform);
@@ -336,4 +330,4 @@ const Flux = ((utils, t5, PubSub, Sortable, Pscroll, Mammoth, MathJax, cnxmlModu
 
   // Public API.
   return { init }
-})(FluxUtils2, t5, PubSub, Sortable, Ps, mammoth, MathJax, cnxmlModule, window);
+})(FluxUtils2, t5, PubSub, Sortable, Ps, mammoth, cnxmlModule, window);

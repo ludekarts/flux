@@ -56,7 +56,6 @@ const FluxUtils2 = (() => {
   // ---- Prodice random HEX Color code ----------
   const randomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16);
 
-
   // ---- Creates unique 8-chars IDs --------------
   const cache = [];
   const chars = '23456789abdegjkmnpqrvwxyz';
@@ -103,10 +102,13 @@ const FluxUtils2 = (() => {
     let _content = [];
 
     // Get bucket content.
-    const content = () => _content;
+    const content = (index) => index === undefined ? _content : _content[index];
 
     // Get bucket content.
     const reverse = () => _content.reverse();
+
+    // Get bucket content length.
+    const count = () => _content.length;
 
     // Add only one item.
     const addOne = (item, cleanUp = true) => {
@@ -137,7 +139,7 @@ const FluxUtils2 = (() => {
     };
 
     // API.
-    return { content, clean, addOne, addMany, reverse };
+    return { content, clean, addOne, addMany, reverse, count };
   };
 
   // ---- While error detected report parametres of element for debuging ----------------
@@ -167,7 +169,7 @@ const FluxUtils2 = (() => {
 
   // ---- Helps with event delegation --------------------
   // USAGE:
-  // let destroy = eventDelegate('button.one', 'click', () => {}, element);
+  // let destroy = eventDelegate('button.one', 'click', (event) => {}, element);
   // destroy(); At the end, it'll remove the listener.
   const eventDelegate = (selector, event, callback, context = document) => {
     let id = selector + '_' + event;

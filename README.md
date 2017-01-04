@@ -93,11 +93,16 @@ Each converter need to return object with following keys:
 **Sample Converter Structure**
 ```
 const converterName = (() => {
-  return {
-    match: 'h1.title',
-    convert (element) {
+
+  const converter = ({subscribe, publish}) => {  
+    return (element) => {
       return '<converted-structure>';
     }
+  };
+
+  return {
+    converter,
+    match: 'h1.title'    
   }
 })();
 
