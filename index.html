@@ -7,23 +7,26 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700&amp;subset=latin-ext" rel="stylesheet">
   <!-- Import ICONS -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+  <!-- Mammoth -->
+  <script src="app/vendors/mammoth.js" charset="utf-8"></script>
 </head>
 <body>
 
-  <div class="flux">
+  <div class="flux-wrapper">
 
-    <!-- MAIN TOOLBAR -->
-    <div class="menu">
-      <nav data-flux="toolbox" data-t5="toolbox">
-        <button repeat="tool in toolset" title="{{ tool.tip }}" data-action="{{ tool.name }}">{{ tool.icon }}</button>
+    <!-- TOOLBOX -->
+    <div class="menu" data-flux="toolbox">
+      <nav data-t5="toolbox">
+        <button repeat="tool in data" title="{{ tool.desc }}" data-action="{{ tool.name }}">{{ tool.icon }}</button>
+        <button class="loaders-btn"><i class="material-icons">change_history</i></button>
       </nav>
     </div>
 
-    <!-- COMPOSER PANEL -->
+    <!-- COMPOSER -->
     <div class="composer">
-      <div class="composer__header">
-        <div data-flux="composer" class="composer__header__menu cfx" data-t5="composer">
-          <button repeat="widget in widgets" title="{{ widget.tip }}" data-action="{{ widget.name }}">{{ widget.icon }}</button>
+      <div class="composer__header" data-flux="widgetmenu">
+        <div class="composer__header__menu cfx" data-t5="widgetbox">
+          <button repeat="widget in data" title="{{ widget.desc }}" data-action="{{ widget.name }}">{{ widget.icon }}</button>
           <button title="Wiecej narzędzi" data-action="more" class="more-tools"><i class="material-icons">more_vert</i></button>
         </div>
       </div>
@@ -32,15 +35,25 @@
       </div>
     </div>
 
-    <!--  DOCX CONTENT -->
+    <!--  FLUX CONTENT -->
     <div class="content">
-      <div id="docx" data-flux="docx" class="docx">
-        <!--  DOCX CONTENT GOES HERE. -->
+      <div id="flux" data-flux="flux" class="flux">
+        <!--  FLUX CONTENT GOES HERE. -->
       </div>
 
       <!-- EXPORT MODAL -->
       <div data-flux="modal">
         <textarea name="name" rows="8" cols="80"></textarea>
+      </div>
+
+      <!-- LOADERS -->
+      <div>
+        <div data-flux="loadersbox">
+          <ul data-t5="loaders">
+            <li repeat="load in data" data-action="{{ load.name }}">{{ load.desc }}</li>
+          </ul>
+        </div>
+        <input type="file" data-flux="upload">
       </div>
     </div>
 

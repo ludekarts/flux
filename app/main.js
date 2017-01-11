@@ -1,45 +1,18 @@
 // Get Flux Core.
 import Flux from "./modules/flux";
-import mammothConfig from "./configs/mammoth";
+
+// Loaders.
+import HTMLLoader from "./loaders/html";
+import DOCXLoader from "./loaders/docx";
+
+// Widgets.
+import FiguresWidget from "./widgets/figures";
 
 // Flux Styles.
 require('./styles/style.scss');
 
+// Initialize Flux.
+Flux.init();
 
-Flux.install([]);
-Flux.init(mammothConfig);
-
-
-
-/*
-Flux.init({
-  mammoth : mammothConfig,
-  convert: [
-    CNXTitle,
-    CNXTitleEnd,
-    CNXHeading,
-    CNXParagraph,
-    CNXEmphasis,
-    CNXExercise,
-    CNXFigure
-  ],
-  transform: [
-    title,
-    heading,
-    paragraph,
-    figure,
-    exercise,
-    definition,
-    cut,
-    remove
-  ],
-  widgets : [
-    colections,
-    figures,
-    // links,
-    equations,
-    // infos,
-    // generator
-  ]
-});
-*/
+// Install Plugins.
+Flux.install(HTMLLoader, DOCXLoader, FiguresWidget);

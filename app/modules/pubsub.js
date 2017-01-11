@@ -1,11 +1,12 @@
 /**
  * PubSub
- * version:     0.0.3
- * author:      Wojciech Ludwin for Katalyst Education 2016
+ * version:     0.0.4
+ * author:      Wojciech Ludwin 2016.
  * contact:     ludekarts@gmail.com, wojciech.ludwin@katalysteducation.org
  * description: Basic implementation of Publish/Subscribe Pattern
 **/
-const PubSub = () => {
+const PubSub = (_logger) => {
+  const logger = _logger && typeof _logger === 'function'? _logger : undefined;
   const subscriptions = [];
   const API = {
     subscribe (topic, observer) {
@@ -22,6 +23,7 @@ const PubSub = () => {
     },
 
     publish (topic, message) {
+      if (logger) logger(topic, message);
       if (!subscriptions[topic]) return API;
       for (let i = subscriptions[topic].length - 1; i >= 0; i--){
         subscriptions[topic][i](message);
@@ -37,3 +39,5 @@ const PubSub = () => {
   // Public API.
   return API;
 };
+
+export default PubSub;
