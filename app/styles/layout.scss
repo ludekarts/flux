@@ -1,0 +1,24 @@
+.flux {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  position: fixed;
+
+  & > .toolbox {
+    width: 60px;
+    height: 100%;
+  	display: block;
+  	position: relative;
+  }
+
+  & > .content {
+    flex-grow: 1;
+  }
+
+  & > .widgets {
+    width: 420px;
+    height: 100%;
+    display: block;
+  	position: relative;
+  }
+}

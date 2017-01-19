@@ -7,7 +7,7 @@
     dataset: [ ['camelCaseName', 'value'], ... ],
   }
 */
-const createElement = ({ type, content, attrs, dataset }) => {
+export const createElement = ({ type, content, attrs, dataset }) => {
   let classes = ~type.indexOf('.') ? type.split('.') : undefined;
   if (classes) {
     type = classes[0];
@@ -30,13 +30,13 @@ const createElement = ({ type, content, attrs, dataset }) => {
 };
 
 // ---- Remove all HTML tags, leaves only Text content ----------------
-const strip = (elemnt) =>  elemnt.innerHTML.replace(/(<([^>]+)>)/ig, '').trim();
+export const strip = (elemnt) =>  elemnt.innerHTML.replace(/(<([^>]+)>)/ig, '').trim();
 
 // ---- Get random value from range ------------
-const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+export const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 // ---- Prodice random HEX Color code ----------
-const randomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16);
+export const randomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16);
 
 // ---- Creates unique 8-chars IDs --------------
 const cache = [];
@@ -47,7 +47,7 @@ const generateKey = () => {
   return result;
 };
 
-const uid = () => {
+export const uid = () => {
   let id, retries = 0;
   while(!id && retries < 9999) {
     id = generateKey();
@@ -61,7 +61,7 @@ const uid = () => {
 };
 
 // ---- Replace @nodeList with @newNode ----------------
-const replaceNodes = (nodeList, newNodes) => {
+export const replaceNodes = (nodeList, newNodes) => {
   if (!Array.isArray(newNodes)) newNodes = [newNodes];
   // SETUP: Locals.
   let cnversionHandle;
@@ -80,7 +80,7 @@ const replaceNodes = (nodeList, newNodes) => {
 };
 
 // ---- Bucket for item to ptrocess ----------------
-const bucket = () => {
+export const bucket = () => {
   let _content = [];
 
   // Get bucket content.
@@ -127,25 +127,25 @@ const bucket = () => {
 };
 
 // ---- While error detected report parametres of element for debuging ----------------
-const reportElement = (element) => {
+export const reportElement = (element) => {
   return element.innerHTML.slice(0,25);
 };
 
 // ---- Get index of a child in element ----------------
-const getChildIndex = (element, child) => {
+export const getChildIndex = (element, child) => {
   const index = Array.from(element.children).indexOf(child);
   return index > -1 ? index : undefined;
 };
 
 // ---- Swap arrays elements ---------------------------
-const swapItems = (array, indexA, indexB) => {
+export const swapItems = (array, indexA, indexB) => {
   let buffer = array[indexA];
   array[indexA] = array[indexB];
   array[indexB] = buffer;
 };
 
 // ---- Remove all child nodes from the tree -----------
-const removeChildren = (node) => {
+export const removeChildren = (node) => {
   while (node.lastChild) {
     node.removeChild(node.lastChild);
   };
@@ -155,7 +155,7 @@ const removeChildren = (node) => {
 // USAGE:
 // let destroy = eventDelegate('button.one', 'click', (event) => {}, element);
 // destroy(); At the end, it'll remove the listener.
-const eventDelegate = (selector, event, callback, context = document) => {
+export const eventDelegate = (selector, event, callback, context = document) => {
   let id = selector + '_' + event;
   if (!context.__EventDelegates__) context.__EventDelegates__ = {};
   if (context.__EventDelegates__[id]) throw new Error (`Current context already have an eventListener for a selector: "${selector}" for "${event}" event.`);
@@ -179,17 +179,17 @@ const eventDelegate = (selector, event, callback, context = document) => {
 };
 
 // Public API.
-export default {
-  uid,
-  strip,
-  bucket,
-  randomInt,
-  swapItems,
-  randomColor,
-  replaceNodes,
-  reportElement,
-  getChildIndex,
-  eventDelegate,
-  createElement,
-  removeChildren
-};
+// export default {
+//   uid,
+//   strip,
+//   bucket,
+//   randomInt,
+//   swapItems,
+//   randomColor,
+//   replaceNodes,
+//   reportElement,
+//   getChildIndex,
+//   eventDelegate,
+//   createElement,
+//   removeChildren
+// };

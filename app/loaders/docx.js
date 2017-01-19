@@ -42,7 +42,7 @@ export default function DOCXLoader ({ subscribe, publish }) {
     desc: "Załaduj plik DOCX",
     load () {
       // Run Flux-File-Loader.
-      publish("load.file", { loader: "DOCXLoader" });
+      publish("load.file", { loader: "DOCXLoader", type: "ArrayBuffer" });
     }
   });
 };

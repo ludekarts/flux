@@ -1,0 +1,27 @@
+.flux .widgets {
+  background: $light-grey;
+
+  &__menu {
+    border-bottom: $border;
+
+    & button {
+      @extend .button-reset;
+      padding: 10px;
+      color: #232635;
+    	background: #EDEDED;
+
+      &:hover {
+        color: #4B5278;
+	      background: #d7d7d7;
+      }
+
+      &.active {
+        @include btn-active(#d7d7d7, #4B5278);
+      }
+    }
+  }
+
+  &__content {
+
+  }
+}

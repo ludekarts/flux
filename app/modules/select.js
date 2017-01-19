@@ -1,19 +1,19 @@
-import utils from "./utils";
+import { bucket } from "./utils";
 import events from "./events";
 
 // Handle Flux elements and its selecton.
 export default function Select (pubsub) {
 
-  // Bucket.
-  const _bucket = utils.bucket();
+  // Bucket + Excluded selectors.
+  const _bucket = bucket(), excluded = ['div#flux.flux', 'div.flux.ps-container'];
 
   // Elements + Flags.
   let _elements, _isShift = false, _isCtrl = false;
 
   // Fire onSelect event.
   const select = (event) => {
-    // Do not selcet perfect-scrollbar's containers.
-    if (event.target.matches('div#flux.flux') || event.target.matches('div.flux.ps-container')) return;
+    // Do not selcet excluded selectors.
+    if (excluded.some(selector => event.target.matches(selector))) return;
 
     if (_isShift) {
       // Select range of _elements.

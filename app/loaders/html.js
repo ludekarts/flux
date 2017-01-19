@@ -14,7 +14,7 @@ export default function HTMLLoader ({ subscribe, publish }) {
   // Register Loader.
   publish("register.loader", {
     name: "HTMLLoader",
-    desc: "Załaduj paczkę HTML",
+    desc: "Załaduj plik HTML",
     load () {
       publish("content.ready", html);
     }

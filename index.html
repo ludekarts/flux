@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Flux v 0.2.0</title>
+  <meta name="author" content="Wojciech Ludwin, ludekarts@gmail.com">
   <!-- Import FONTS -->
   <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700&amp;subset=latin-ext" rel="stylesheet">
   <!-- Import ICONS -->
@@ -12,56 +13,53 @@
 </head>
 <body>
 
-  <div class="flux-wrapper">
+  <!-- FLUX v 0.2.0 -->
+  <section class="flux">
 
     <!-- TOOLBOX -->
-    <div class="menu" data-flux="toolbox">
+    <div class="toolbox" data-flux="toolbox">
       <nav data-t5="toolbox">
         <button repeat="tool in data" title="{{ tool.desc }}" data-action="{{ tool.name }}">{{ tool.icon }}</button>
-        <button class="loaders-btn"><i class="material-icons">change_history</i></button>
       </nav>
     </div>
 
-    <!-- COMPOSER -->
-    <div class="composer">
-      <div class="composer__header" data-flux="widgetmenu">
-        <div class="composer__header__menu cfx" data-t5="widgetbox">
-          <button repeat="widget in data" title="{{ widget.desc }}" data-action="{{ widget.name }}">{{ widget.icon }}</button>
-          <button title="Wiecej narzędzi" data-action="more" class="more-tools"><i class="material-icons">more_vert</i></button>
-        </div>
-      </div>
-      <div data-flux="widget"class="composer__panels cfx">
-        <!-- DYNAMIC VIEWS -->
-      </div>
-    </div>
-
-    <!--  FLUX CONTENT -->
+    <!-- FLUX CONTENT -->
     <div class="content">
-      <div id="flux" data-flux="flux" class="flux">
+      <div class="content__wrap" data-flux="content">
         <!--  FLUX CONTENT GOES HERE. -->
       </div>
-
-      <!-- EXPORT MODAL -->
-      <div data-flux="modal">
-        <textarea name="name" rows="8" cols="80"></textarea>
-      </div>
-
-      <!-- LOADERS -->
-      <div>
-        <div data-flux="loadersbox">
-          <ul data-t5="loaders">
-            <li repeat="load in data" data-action="{{ load.name }}">{{ load.desc }}</li>
-          </ul>
-        </div>
-        <input type="file" data-flux="upload">
-      </div>
     </div>
 
-  </div>
-  <!-- FLUX Core  -->
+    <!-- WIDGETS -->
+    <div class="widgets">
+      <div class="widgets__menu" data-flux="widgetmenu">
+        <div data-t5="widgetmenu">
+          <button repeat="widget in data" title="{{ widget.desc }}" data-action="{{ widget.name }}">{{ widget.icon }}</button>
+          <button class="more-tools" title="Wiecej narzędzi" data-action="more"><i class="material-icons">more_vert</i></button>
+        </div>
+      </div>
+      <div class="widgets__content" data-flux="widget"></div>
+    </div>
+
+  </section>
+  <!-- FLUX Core -->
   <script src="flux.core.js" charset="utf-8"></script>
 </body>
 </html>
+
+
+<!--
+<button class="loaders-btn" title="Załaduj pliki" data-action="showLoaders"><i class="material-icons">change_history</i></button>
+ -->
+<!-- LOADERS
+<div class="loadersbox">
+  <div data-flux="loadersbox">
+    <ul data-t5="loaders">
+      <li repeat="load in data" data-action="{{ load.name }}">{{ load.desc }}</li>
+    </ul>
+  </div>
+  <input type="file" data-flux="upload">
+</div>-->
 
 <!-- <button title="Kolekcje" data-action="collections"><i class="material-icons">view_day</i></button>
 <button title="Grafiki" data-action="graphics"><i class="material-icons">image</i></button>

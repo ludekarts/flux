@@ -1,9 +1,9 @@
-import utils from "../modules/utils";
+import {createElement} from "../modules/utils";
 
 
 export default function FiguresWidget ({ subscribe, publish }) {
 
-  const _template = utils.createElement({
+  const _template = createElement({
     type: "h1.green",
     content: "Hallo Figure widget!"
   });

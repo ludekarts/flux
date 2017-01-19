@@ -1,51 +1,60 @@
 /* FLUX CORE v 0.2.0 by Wojciech Ludwin, <ludekarts@gmail.com> */
 
-import utils from "./utils";
+import * as utils from "./utils";
 import Logger from "./logger";
 import PubSub from "./pubsub";
 import Select from "./select";
+import Loader from "./loader";
 import events from "./events";
 import t5 from "../vendors/t5";
 import Sortable from "sortablejs";
-import buttonBlocks from "./blocks";
+import Container from "./container";
 import _pscroll from "perfect-scrollbar";
 
 // UI References.
-let _flux, _toolbox, _widgetmenu, _widget, _converters, _sortable, _uploadInput, _loaderbox, _currentLoader = '';
+let _fluxContent, _toolbox, _widgetmenu, _widget, _sortable, _loaderbox;
 
 // Locals.
-const _plugins = [], _installed = [], _toolset = [], _widgetMenu = [], _pubsub = PubSub(Logger), _fluxElements = Select(_pubsub);
+const _plugins = [];
 
-// Components.
-const _loaders = {}, _widgets = {}, _transformers = {}, _loaderButtonsModel = [];
+// Modules.
+const _pubsub = PubSub(Logger), _fileLoader = Loader(_pubsub), _fluxElements = Select(_pubsub), _container = Container(t5, _pubsub);
 
-// ---- INSTALL PLUGINS -----------
+// Assets.
+const _loaders = {}, _widgets = {}, _transformers = {}, _converters = {};
+
+// Assets Map.
+const assetsMap = {
+  loaders: _loaders,
+  widgets: _widgets,
+  tools: _transformers,
+  converters: _converters
+};
+
+// ---- INSTALLATORS ------------------
 
 const install = (...plugins) => {
   plugins.forEach(plugin => _plugins.push(plugin(_pubsub)));
-};
-
-// Register content loaders.
-const registerLoader = (loader) => {
-  // Create map of loaders.
-  _loaders[loader.name] = loader.load;
-  // Create model for buttons.
-  _loaderbox.model.push({
-    name: loader.name,
-    desc: loader.desc
-  });
 };
 
 // Register Widget.
 const registerWidget = (widget) => {
   // Create Transformers references.
   _widgets[widget.name] = widget.template;
+  // Destructureing.
+  const {name, desc, icon} = widget;
   // Create buttons model.
-  _widgetmenu.model.push({
-    name: widget.name,
-    desc: widget.desc,
-    icon: widget.icon
-  });
+  _widgetmenu.model.push({name, desc, icon});
+};
+
+// Register Transformer.
+const registerTransformer = (tool) => {
+  // Create Transformers references.
+  _transformers[tool.name] = tool.transform;
+  // Destructureing.
+  const {name, desc, icon} = tool;
+  // Create buttons model.
+  _toolbox.model.push({name, desc, icon});
 };
 
 // Register Converter.
@@ -54,23 +63,26 @@ const registerConverter = (converter) => {
   _converters[converter.name] = converter.run;
 };
 
-// Register Transformer.
-const registerTransformer = (tool) => {
-  // Create Transformers references.
-  _transformers[tool.name] = tool.transform;
-  // Create buttons model.
-  _toolbox.model.push({
-    name: tool.name,
-    desc: tool.desc,
-    icon: tool.icon
-  });
+// Register content loaders.
+const registerLoader = (loader) => {
+  // Create map of loaders.
+  _loaders[loader.name] = loader.load;
 };
+
 
 // ---- ERROR HANDLE ------------------
 
 const errorLogger = ({ msg, error }) => {
   console.error(msg, error);
 };
+
+
+// ---- APP REQUIRE ---------------------
+
+const appRequire = (asset) => ({ name } = {}) => {
+  _pubsub.publish(events.app.get[asset], name ? assetsMap[asset][name] : assetsMap[asset]);
+};
+
 
 // ---- CONTENT HANDLES -----------------
 
@@ -81,44 +93,11 @@ const reorderContent = (event) => {
 
 // Update _flux content & nodes in _fluxElements.
 const updateFluxContent = (content) => {
-  _flux.innerHTML = content;
+  _fluxContent.innerHTML = content;
   // Apply order identifiers for _docx nodes.
-  _fluxElements.update(Array.from(_flux.children));
+  _fluxElements.update(Array.from(_fluxContent.children));
 };
 
-// ---- UPLOAD HANDLE --------------------
-
-// Handle selected file in explorator.
-const uploadHandle = (event) => {
-  const reader = new FileReader();
-  // File lida success.
-  reader.onload = function(loadEvent) {
-    _pubsub.publish(events.load.success + _currentLoader, loadEvent.target.result);
-  };
-  // File lida failure.
-  reader.onerror = function(error) {
-    // TODO: Better error handeling.
-    _pubsub.publish(events.load.error + _currentLoader, error);
-  };
-  // Get file to load.
-  reader.readAsArrayBuffer(event.target.files[0]);
-};
-
-
-const selectCurrentLoader = (event) => {
-  const action = event.target.dataset.action;
-  if (action) {
-    // Set Current Loader.
-    _currentLoader = '.' + action;
-    // Run Current Loader.
-    _loaders[action]();
-  }
-};
-
-// Open File Explorator on `load.file` event.
-const openFileExplorator = ({ loader }) => {
-  _uploadInput.click();
-}
 
 // ---- WIDGETS --------------------------
 
@@ -140,10 +119,6 @@ const keyDownHandler = (event) => {
 const keyUpHandler = (event) => {
   _fluxElements.isCtrl(event.ctrlKey);
   _fluxElements.isShift(event.shiftKey);
-
-  // Escape.
-  if (event.keyCode === 27)
-    _modal.classList.remove('on');
 };
 
 
@@ -151,65 +126,65 @@ const keyUpHandler = (event) => {
 
 const init = () => {
 
-  // Check for plugins.
+  // ---- Check for plugins --------------
+
   if (_plugins.length > 0)
     throw new Error('Initialization should run befroe Installation process!');
 
-  // Register templates.
+  // ---- Register templates -------------
+
   t5.template();
 
+  // ---- UI Placeholders ----------------
+
   // Main content container.
-  _flux = document.querySelector('[data-flux="flux"]');
-
-  // Widgets placeholder.
-  _widget = document.querySelector('[data-flux="widget"]');
-
-  // Left handised toolbox panel.
-  _toolbox = buttonBlocks({
-    container: document.querySelector('[data-flux="toolbox"]'),
-    render: t5.trace('toolbox'),
-    triggers: _transformers
-  });
-
-  // Loader menu.
-  _loaderbox = buttonBlocks({
-    container: document.querySelector('[data-flux="loadersbox"]'),
-    render: t5.trace('loaders'),
-    triggers: _loaders
-  });
-
-  // Widgets menu.
-  _widgetmenu = buttonBlocks({
-    container: document.querySelector('[data-flux="widgetmenu"]'),
-    render: t5.trace('widgetbox'),
-    triggers: _widgets
-  });
-
-  // Upload input.
-  _uploadInput = document.querySelector('[data-flux="upload"]'); // Hidden input-file.
-
-  // Setup drag & drop handler.
-  _sortable = Sortable.create(_flux, { onEnd: reorderContent });
-
-  // Set scrollbars from PerfectScroll lib.
-  _pscroll.initialize(_flux.parentNode, { suppressScrollX: true });
+  _fluxContent = document.querySelector('[data-flux="content"]');
 
   // Setup event listeners.
-  _flux.addEventListener('click', _fluxElements.select);
+  _fluxContent.addEventListener('click', _fluxElements.select);
 
-  // Keyboard hendlers.
+  // Widget placeholder.
+  _widget = document.querySelector('[data-flux="widget"]');
+
+
+  // ---- UI Containers ----------------
+
+  // Left-hand-side tools menu.
+  _toolbox = _container.create ('toolbox', 'toolbox', _transformers);
+
+  // Right-hand-side widgets menu.
+  _widgetmenu = _container.create ('widgetmenu', 'widgetmenu', _widgets);
+
+
+  // ---- Content Enhancement ----------
+
+  // Setup drag & drop handler.
+  _sortable = Sortable.create(_fluxContent, { onEnd: reorderContent });
+
+  // Set scrollbars from PerfectScroll lib.
+  _pscroll.initialize(_fluxContent.parentNode, { suppressScrollX: true });
+
+
+  // ---- Keyboard hendlers -----------
+
   document.addEventListener('keyup', keyUpHandler);
   document.addEventListener('keydown', keyDownHandler);
 
-  // Add Flux listeners.
+  // ---- Flux Listeners --------------
+
   _pubsub
-    // Registration liteners.
+    // Plugin Registration Listeners.
     .subscribe(events.register.loader, registerLoader)
     .subscribe(events.register.widget, registerWidget)
     .subscribe(events.register.converter, registerConverter)
     .subscribe(events.register.transformer, registerTransformer)
+    // Require assets.
+    .subscribe(events.app.require.tools, appRequire('tools'))
+    .subscribe(events.app.require.loaders, appRequire('loaders'))
+    .subscribe(events.app.require.widgets, appRequire('widgets'))
+    .subscribe(events.app.require.converters, appRequire('converters'))
     // Listener for native File explorator.
-    .subscribe(events.load.file, openFileExplorator)
+    .subscribe(events.load.file, _fileLoader.load)
     // Handle errors with content.
     .subscribe(events.content.error, errorLogger)
     // Event generated by Loaders, when conten is ready.
@@ -220,4 +195,5 @@ const init = () => {
     .publish(events.app.initialized);
 };
 
+// Public API.
 export default { init, install }

@@ -1,0 +1,56 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+	font-family: 'Roboto', sans-serif ;
+}
+
+*[off] {
+    display: none !important;
+}
+
+// Clearfix
+.cfx {
+  &:after {
+  	visibility: hidden;
+  	display: block;
+  	font-size: 0;
+  	content: " ";
+  	clear: both;
+  	height: 0;
+  }
+}
+
+// MIXINS.
+
+@mixin btn-active ($background, $underline) {
+  font-weight: bold;
+  color: $underline;
+
+  background: $background;
+  background: -moz-linear-gradient(top,  $background 94%, $underline 94%);
+  background: -webkit-linear-gradient(top,  $background 94%,$underline 94%);
+  background: linear-gradient(to bottom,  $background 94%,$underline 94%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$background', endColorstr='$underline',GradientType=0 );
+}
+
+// BUTTONS.
+
+.button-reset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background: none;
+  transition: background .3s ease, color .3s ease;
+
+  & > i {
+    vertical-align: middle;
+  }
+}
+
+// VARIABLES.
+
+$border: 1px solid #D4D4D4;
+$light-grey: #F8F8F8;
