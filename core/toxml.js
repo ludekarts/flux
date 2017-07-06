@@ -60,7 +60,16 @@ const toCnxml = function(uid, copyAttrs, createElement) {
   const transformMath = (node) =>
     node.outerHTML = node.outerHTML.replace(/(<m|<\/m)/g, (match) => match === '<m' ? '<m:m' : '</m:m');
 
+  // Normalize newlines.
   const transfomNewLines = (node) => node.outerHTML = '<newline>NL<\/newline>';
+
+  // Transform <i> & <b> tags from Chrome.
+  const transformEmphasis = (node) => {
+    if (node.matches('i'))
+      node.outerHTML = `<emphasis effect="italics">${node.innerHTML}</emphasis>`;
+    else if (node.matches('b'))
+      node.outerHTML = `<emphasis effect="bold">${node.innerHTML}</emphasis>`;
+  };
 
   // Ensuea all ids are unique
   const transformUniqueIds = (collection = []) => (node) => {
@@ -72,13 +81,14 @@ const toCnxml = function(uid, copyAttrs, createElement) {
     }
   };
 
+  // Remove maths wrappers. <div data-type="math"></div>
   const removeMathWraps = (node) => node.outerHTML = node.innerHTML;
 
   return {
     cleanMath,
     // Convert 'source' HTML tree into CNXML string.
     transform (htmlNode) {
-    
+
       // Check for duplicate IDs.
       Array.from(htmlNode.querySelectorAll('*[id]')).forEach(transformUniqueIds([]));
 
@@ -106,6 +116,7 @@ const toCnxml = function(uid, copyAttrs, createElement) {
       // Transform back some of the xml tags to be compatible with CNXML standard.
       Array.from(cnxml.querySelectorAll('div[data-type=math]')).forEach(removeMathWraps);
       Array.from(cnxml.querySelectorAll('reference')).forEach(transformRefs);
+      Array.from(cnxml.querySelectorAll('b, i')).forEach(transformEmphasis);
       Array.from(cnxml.querySelectorAll('math')).forEach(transformMath);
 
       // Return final CNXML.
@@ -117,7 +128,7 @@ const toCnxml = function(uid, copyAttrs, createElement) {
         // Remove all spaces between tags.
         .replace(/>\s*?</g, '><')
         // Remove all multiple spaces.
-        .replace(/\s{2,}/g, '');
+        .replace(/\s{2,}/g, ' ');
     }
   };
 };

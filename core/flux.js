@@ -1,5 +1,5 @@
 // Flux 3
-// Wojciech Ludwin 2017, ludekarts@gmail.com.
+// Wojciech Ludwin 2017, ludekarts@gmail.com
 
 const flux3 = (function(elements, modal, scrollbar, {
   uid, elemntsToCnxml, createElement, elFromString, addToolButton, unwrapElement,
@@ -24,10 +24,11 @@ const flux3 = (function(elements, modal, scrollbar, {
   const flux3 = document.querySelector('#flux3');
   const intro = document.querySelector('#intro');
   const close = document.querySelector('#close');
+  const confirm = document.querySelector('#confirm');
   const content = document.querySelector('#content');
   const toolbar = document.querySelector('#toolbar');
   const closeOut = document.querySelector('#closeOut');
-  const eqationsPanel = document.querySelector('[data-mthlib]');
+  const equationsPanel = document.querySelector('[data-mthlib]');
   const toolbox = document.querySelector('#toolbar > div[data-tools-main]');
   const extensions = document.querySelector('#toolbar > div[data-tools-ext]');
 
@@ -39,7 +40,8 @@ const flux3 = (function(elements, modal, scrollbar, {
   toolbox.appendChild(createElement('button[title="Unwrap" data-action="unwrap"]' , '<i class="material-icons">content_cut</i>'));
 
   // Equations Panel scrollbar.
-  scrollbar.initialize(eqationsPanel);
+  scrollbar.initialize(equationsPanel);
+
 
   // ---- Helpers ----------------
 
@@ -54,6 +56,26 @@ const flux3 = (function(elements, modal, scrollbar, {
   const reRenderMath = () =>
     MathJax.Hub.Queue(["Typeset", MathJax.Hub, renderMath]);
 
+  const confirmAnimation = () => {
+    confirm.classList.add('show')
+    const removeClass = (event) => {
+      confirm.classList.remove('show');
+      confirm.removeEventListener("animationend", removeClass);
+    };
+    confirm.addEventListener("animationend", removeClass);
+  };
+
+  const addEquations = (source) => {
+    source.forEach(math => {
+      const content = (typeof math === 'string' ? math : math.outerHTML);
+      const hash = base64(content);
+      if (!~state.equations.indexOf(hash)) {
+        state.equations.push(hash);
+        equationsPanel.firstElementChild.appendChild(createElement('button[data-action="addEq"]', content));
+      }
+    });
+    reRenderMath();
+  };
 
   // ---- Local history ----------
 
@@ -67,12 +89,16 @@ const flux3 = (function(elements, modal, scrollbar, {
 
   const backupContent = () => {
     try {
-      localStorage.setItem('flux3-ct-backup', JSON.stringify({ content: cleanMath(content).innerHTML }));
+      const math = Array.from(equationsPanel.querySelectorAll('script')).map(eq => eq.textContent);
+      localStorage.setItem('flux3-ct-backup', JSON.stringify({
+        math: math,
+        content: cleanMath(content.cloneNode(true)).innerHTML 
+      }));
     } catch (error) {
       console.error(error);
       alert('Cannot save Backup Copy. See console for more details');
     }
-    console.log('Backup Copy Saved');
+    confirmAnimation();
   };
 
   const restoreContent = () => {
@@ -80,7 +106,10 @@ const flux3 = (function(elements, modal, scrollbar, {
     if (!backup.content) return alert('Backup copy does not exist!');
     else {
       content.innerHTML = backup.content;
-      reRenderMath();
+      if (backup.math) {
+        state.equations = [];
+        addEquations(backup.math);
+      }
     }
   };
 
@@ -102,20 +131,12 @@ const flux3 = (function(elements, modal, scrollbar, {
 
     // Search for equations and add it to the equationsPanel.
     if (~clipContent.indexOf('<math>')) {
-      Array.from(createElement('div', clipContent).querySelectorAll('math'))
-        .forEach(math => {
-          const hash = base64(math.outerHTML);
-          if (!~state.equations.indexOf(hash)) {
-            state.equations.push(hash);
-            eqationsPanel.firstElementChild.appendChild(createElement('button[data-action="addEq"]', math.outerHTML));
-          }
-        });
-      reRenderMath();
+      addEquations(Array.from(createElement('div', clipContent).querySelectorAll('math')));
     }
   };
 
   // Detect user actions.
-  const detectAction = ({target, ctrlKey}) => {
+  const detectAction = ({target, altKey}) => {
 
     // Detect action.
     const action = target.dataset.action;
@@ -145,7 +166,7 @@ const flux3 = (function(elements, modal, scrollbar, {
       // Wrapp element / Add template.
       (selectedText.length > 0)
         ? range.surroundContents(tool.wrapp(uid))
-        : ctrlKey
+        : altKey
           ? insertSiblingNode(selection.anchorNode, elFromString(tool.template(uid)))
           : range.insertNode(elFromString(tool.template(uid)));
 
@@ -207,7 +228,7 @@ const flux3 = (function(elements, modal, scrollbar, {
     if (altKey && key === 'r') restoreContent();
 
     // Toggle eqquations panel. 'Ctrl + Space'.
-    if (ctrlKey && key === ' ') eqationsPanel.classList.toggle('show');
+    if (ctrlKey && key === ' ') equationsPanel.classList.toggle('show');
 
     // Display CNXML. 'Alt + x'.
     if (altKey && key === 'x') {
@@ -235,6 +256,6 @@ const flux3 = (function(elements, modal, scrollbar, {
   content.addEventListener("paste", pasteController);
   content.addEventListener('click', detectAltActions);
   document.addEventListener('keyup', keyboardActions);
-  eqationsPanel.addEventListener('click', addEquation);
+  equationsPanel.addEventListener('click', addEquation);
 
 }(cnxmlElements, Modal, Ps, utils));

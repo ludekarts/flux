@@ -182,15 +182,15 @@ const cnxmlElements = (function({createElement}) {
   }
 
   // Content with math.
-  const ctm = {
-    tag: 'math',
-    title: 'Content with math',
-    icon: '<i class="material-icons">code</i>',
-    template: (uid) =>
-      `<div data-type="math">MATH</div>`,
-    wrapp: (uid) =>
-      createElement(`div[data-type="math"]`)
-  };
+  // const ctm = {
+  //   tag: 'math',
+  //   title: 'Content with math',
+  //   icon: '<i class="material-icons">code</i>',
+  //   template: (uid) =>
+  //     `<div data-type="math">MATH</div>`,
+  //   wrapp: (uid) =>
+  //     createElement(`div[data-type="math"]`)
+  // };
 
   // <eqiation>
   const eqiation = {
@@ -206,5 +206,5 @@ const cnxmlElements = (function({createElement}) {
       createElement(`div[id="${uid()}" data-type="eqiation"]`)
   }
 
-  return [section, title, para, note, list, exercise, reference, figure, eqiation, term, ctm];
+  return [section, title, para, note, list, exercise, reference, figure, eqiation, term];
 }(utils));

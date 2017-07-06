@@ -224,7 +224,7 @@ div[data-type]:after {
 
 div[data-modal] {
   left: 50%;
-  top: -120px;
+  top: -150px;
   width: 340px;
   z-index: 500;
   position: fixed;
@@ -308,4 +308,41 @@ aside > .buttons > button:before {
   z-index: 100;
   display: block;
   position: absolute;
+}
+
+/* CONFIRM */
+
+.confirm {
+  top: 6px;
+  left: -95px;
+  z-index: 1500;
+  position: fixed;
+}
+
+.confirm.show {
+  animation: slide 3s forwards;
+}
+
+.confirm > i {
+  color: #171b32;
+  font-size: 30px;
+}
+
+.confirm > span {
+  height: 20px;
+  padding-top: 7px;
+  vertical-align: top;
+  display: inline-block;
+}
+
+@-webkit-keyframes slide {
+  30% { left: 5px; }
+  60% { left: 5px; }
+  100% { left: -95px; }
+}
+
+@keyframes slide {
+  30% { left: 5px; }
+  60% { left: 5px; }
+  100% { left: -95px; }
 }
