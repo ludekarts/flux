@@ -1,0 +1,27 @@
+term {
+  font-weight: bold;
+  color: #b407d0;
+}
+
+reference {
+  color: #1dd7dd;
+  text-decoration: underline;
+}
+
+.flux-math,
+div[data-type=media] {
+  position: relative;
+  display: inline-block;
+}
+
+.flux-math:before,
+div[data-type=media]:before {
+  content: ' ';
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+}

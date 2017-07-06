@@ -1,128 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>FLUX</title>
-  <!-- Import FONTS -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700|Roboto:300,400,500,700&subset=latin-ext"/>
-  <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700&amp;subset=latin-ext" rel="stylesheet">
-  <!-- FLUX STYLES -->
-  <link rel="stylesheet" href="styles/style.css"/>
-  <!-- DOCX STYLES -->
-  <link rel="stylesheet" href="styles/docx.css"/>
-  <!-- WIDGETS STYLES -->
-  <link rel="stylesheet" href="styles/widget.css"/>
-  <!-- Import ICONS -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
-  <!--  Perfect Scrollbar -->
-  <link rel="stylesheet" href="bower_components/perfect-scrollbar/css/perfect-scrollbar.min.css" />
-  <script src="bower_components/perfect-scrollbar/js/perfect-scrollbar.min.js"></script>
-  <!-- Sortable.js-->
-  <script src="bower_components/Sortable/Sortable.min.js"></script>
-  <!-- Mammoth.js -->
-  <script src="vendors/mammoth.min.js"></script>
-  <!-- MathJax.js -->
-  <script src="bower_components/MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-  <!-- T5 Templates -->
-  <script src="vendors/T5.js"></script>
-  <!-- PubSub -->
-  <script src="scripts/pubsub.js"></script>
-</head>
-<body>
-  <div class="flux">
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Flux 3</title>
+    <link rel="stylesheet" href="styles/cnxml.css">
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  </head>
+  <body>
 
-    <!-- MAIN TOOLBAR -->
-    <div class="menu">
-      <nav data-flux="toolbox" data-t5="toolbox">
-        <button repeat="tool in toolset" title="{{ tool.tip }}" data-action="{{ tool.name }}">{{ tool.icon }}</button>
-      </nav>
-    </div>
-
-    <!-- COMPOSER PANEL -->
-    <div class="composer">
-      <div class="composer__header">
-        <div data-flux="composer" class="composer__header__menu cfx" data-t5="composer">
-          <button repeat="widget in widgets" title="{{ widget.tip }}" data-action="{{ widget.name }}">{{ widget.icon }}</button>
-          <button title="Wiecej narzędzi" data-action="more" class="more-tools"><i class="material-icons">more_vert</i></button>
+    <section>
+      <nav id="toolbar">
+        <div data-tools-main>
+          <img id="flux3" class="logo" title="FLux 3" src="images/flux.svg"/>
+          <!-- Dynamic content -->
         </div>
+        <div data-tools-ext>
+          <!-- Dynamic content -->
+        </div>
+      </nav>
+
+      <main id="content" contenteditable="true" data-type="content">
+        Content goes here.
+      </main>
+
+
+      <aside data-modal>
+        <div class="content">
+          <input type="text" placeholder="Image Name">
+          <textarea name="name" placeholder="Alt text"></textarea>
+        </div>
+        <div class="buttons">
+          <button data-action="save">Save</button>
+          <button data-action="cancel">Cancel</button>
+        </div>
+      </aside>
+
+      <div id="out">
+        <textarea class="cnxmlout"></textarea>        
+        <button id="closeOut">Close</button>
+        <!-- Dynamic content -->
       </div>
-      <div data-flux="widget"class="composer__panels cfx">
-        <!-- DYNAMIC VIEWS -->
+
+      <div id="intro" class="show">
+        <h2><img src="images/flux.svg" alt=""><span class="fl3">Flux 3</span></h2>
+        <hr>
+
+        <h3>Keyboard shortcuts</h3>
+        <ul>
+          <li><code>Alt + x</code> - Show CNXML source</li>
+          <li><code>Alt + s</code> - Save local copy</li>
+          <li><code>Alt + r</code> - Restore local copy</li>
+          <li><code>Esc</code> - Hide extension menu</li>
+          <li><code>Ctrl + Shift + z</code> - Undo add element action</li>
+        </ul>
+
+        <h3>Alternative operation</h3>
+        <ul>
+          <li><code>LMB + Alt + Image</code> - Open image attribute modal (src & alt)</li>
+          <li><code>LMB + Alt + element in content</code> - Open extension menu if exist</li>
+          <li><code>LMB + Ctrl + Tool</code> - Add element as a sibling of current element</li>
+        </ul>
+
+        <button id="close">Close</button>
       </div>
-    </div>
+    </section>
 
-    <!--  DOCX CONTENT -->
-    <div class="content">
-      <div id="docx" data-flux="docx" class="docx">
-        <!--  DOCX CONTENT GOES HERE. -->
-      </div>
-
-      <!-- EXPORT MODAL -->
-      <div data-flux="modal">
-        <textarea name="name" rows="8" cols="80"></textarea>
-      </div>
-    </div>
-
-
-  </div>
-
-  <!-- CNXML MODULE SKELETON  -->
-  <script src="scripts/cnxml-temp.js"></script>
-  <!-- Import Flux Utilities -->
-  <script src="scripts/flux.utils.js"></script>
-  <!-- Import Flux Transformers -->
-  <script src="scripts/transformers.js"></script>
-  <!-- Import Flux Widgets -->
-  <script src="scripts/widgets.js"></script>
-  <!-- Import Flux Converters -->
-  <script src="scripts/converters.js"></script>
-  <!-- MAMMOTH Configuration -->
-  <script src="scripts/mammoth.conf.js" charset="utf-8"></script>
-  <!-- FLUX Core  -->
-  <!-- <script src="scripts/flux.js" charset="utf-8"></script> -->
-  <script src="scripts/flux.core.js" charset="utf-8"></script>
-  <!-- Startup code -->
-  <script type="text/javascript">
-    Flux.init({
-      mammoth : mammothConfig,
-      convert: [
-        CNXTitle,
-        CNXTitleEnd,
-        CNXHeading,
-        CNXParagraph,
-        CNXEmphasis,
-        CNXExercise,
-        CNXFigure
-      ],
-      transform: [
-        title,
-        heading,
-        paragraph,
-        figure,
-        exercise,
-        definition,
-        cut,
-        remove
-      ],
-      widgets : [
-        colections,
-        figures,
-        // links,
-        equations,
-        // infos,
-        // generator
-      ]
-    });
-
-
-
-  </script>
-</body>
+    <script src="core/travrs.js" charset="utf-8"></script>
+    <script src="core/toxml.js" charset="utf-8"></script>
+    <script src="core/utils.js" charset="utf-8"></script>
+    <script src="core/modal.js" charset="utf-8"></script>
+    <script src="cnxml/cnxml.js" charset="utf-8"></script>
+    <script src="core/flux.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" charset="utf-8"></script>
+  </body>
 </html>
-
-<!-- <button title="Kolekcje" data-action="collections"><i class="material-icons">view_day</i></button>
-<button title="Grafiki" data-action="graphics"><i class="material-icons">image</i></button>
-<button title="Odnośniki" data-action="links"><i class="material-icons">link</i></button>
-<button title="Rwownania" data-action="equations"><i class="material-icons">functions</i></button>
-<button title="Informacje" data-action="info"><i class="material-icons">info_outline</i></button>
-<button title="Konwertuj" data-action="convert"><i class="material-icons">code</i></button> -->
