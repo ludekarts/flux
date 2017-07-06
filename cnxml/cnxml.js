@@ -163,7 +163,7 @@ const cnxmlElements = (function({createElement}) {
     template: (uid) =>
       `<div data-type="item">Item here.</div>`,
     wrapp: (uid) =>
-      createElement(`div[id="${uid()}" data-type="item"]`)
+      createElement(`div[data-type="item"]`)
   };
 
   // <list>

@@ -222,7 +222,7 @@ div[data-type]:after {
 
 /* MODAL */
 
-aside {
+div[data-modal] {
   left: 50%;
   top: -120px;
   width: 340px;
@@ -234,22 +234,22 @@ aside {
   box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12);
 }
 
-aside.show {
+div[data-modal].show {
   top: 120px;
 }
 
-aside > .content {
+div[data-modal] > .content {
   margin: 10px;
 }
 
-aside > .content input {
+div[data-modal] > .content input {
   width: 100%;
   border: none;
   padding: 10px;
   display: block;
 }
 
-aside > .content textarea {
+div[data-modal] > .content textarea {
   width: 100%;
   border: none;
   padding: 10px;
@@ -257,8 +257,55 @@ aside > .content textarea {
   margin-top: 10px;
 }
 
-aside > .buttons {
+div[data-modal] > .buttons {
   text-align: right;
   padding-bottom: 7px;
   padding-right: 10px;
+}
+
+
+/* MATH LIBRARY */
+aside {
+  top: 44px;
+  bottom: 0;
+  width: 320px;
+  right: -330px;
+  position: fixed;
+  background: #eee;
+  transition: right .3s ease;
+}
+
+aside.show {
+  right: 0;
+}
+
+aside > .buttons {
+  margin: 0px;
+  padding: 0px;
+}
+
+aside > .buttons > button {
+  margin: 0;
+  width: 100%;
+  padding: 10px;
+  display: block;
+  text-align: center;
+  position: relative;
+  border-bottom: 1px solid #ccc;
+  transition: background .3s ease;
+}
+
+aside > .buttons > button:hover {
+  background: #ddd;
+}
+
+aside > .buttons > button:before {
+  content: ' ';
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  display: block;
+  position: absolute;
 }

@@ -5,6 +5,7 @@
     <title>Flux 3</title>
     <link rel="stylesheet" href="styles/cnxml.css">
     <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/perfect-scrollbar.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   </head>
   <body>
@@ -24,8 +25,13 @@
         Content goes here.
       </main>
 
+      <aside data-mthlib>
+        <div class="buttons">
+          <!-- Dynamic content -->
+        </ul>
+      </aside>
 
-      <aside data-modal>
+      <div data-modal>
         <div class="content">
           <input type="text" placeholder="Image Name">
           <textarea name="name" placeholder="Alt text"></textarea>
@@ -34,10 +40,10 @@
           <button data-action="save">Save</button>
           <button data-action="cancel">Cancel</button>
         </div>
-      </aside>
+      </div>
 
       <div id="out">
-        <textarea class="cnxmlout"></textarea>        
+        <textarea class="cnxmlout"></textarea>
         <button id="closeOut">Close</button>
         <!-- Dynamic content -->
       </div>
@@ -52,20 +58,23 @@
           <li><code>Alt + s</code> - Save local copy</li>
           <li><code>Alt + r</code> - Restore local copy</li>
           <li><code>Esc</code> - Hide extension menu</li>
+          <li><code>Alt + Space</code> - Toggle Equations Panel</li>
           <li><code>Ctrl + Shift + z</code> - Undo add element action</li>
+          <li><code>Alt + LMB + EqButton</code> - Remove equation button from Equations panel</li>
         </ul>
 
-        <h3>Alternative operation</h3>
+        <h3>Alternative Content Operations</h3>
         <ul>
-          <li><code>LMB + Alt + Image</code> - Open image attribute modal (src & alt)</li>
-          <li><code>LMB + Alt + element in content</code> - Open extension menu if exist</li>
-          <li><code>LMB + Ctrl + Tool</code> - Add element as a sibling of current element</li>
+          <li><code>Alt + LMB + Image</code> - Open image attribute modal (src & alt)</li>
+          <li><code>Alt + LMB + element in content</code> - Open extension menu if exist</li>
+          <li><code>Ctrl + LMB + Tool</code> - Add element as a sibling of current element</li>
         </ul>
 
         <button id="close">Close</button>
       </div>
     </section>
 
+    <script src="core/vendor/perfect-scrollbar.min.js" charset="utf-8"></script>
     <script src="core/travrs.js" charset="utf-8"></script>
     <script src="core/toxml.js" charset="utf-8"></script>
     <script src="core/utils.js" charset="utf-8"></script>

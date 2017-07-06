@@ -1,15 +1,15 @@
 // Flux 3
 // Wojciech Ludwin 2017, ludekarts@gmail.com.
 
-const flux3 = (function(elements, modal, {
-  uid, elemntsToCnxml, createElement, elFromString,
-  addToolButton, unwrapElement, insertSiblingNode,
-  renderMath, toCnxml, cleanMath, formatXml
+const flux3 = (function(elements, modal, scrollbar, {
+  uid, elemntsToCnxml, createElement, elFromString, addToolButton, unwrapElement,
+  insertSiblingNode, renderMath, toCnxml, cleanMath, formatXml, base64
 }) {
 
   // Global state.
   const state = {
     history: [],
+    equations: [],
     cnxml: elemntsToCnxml(elements)
   };
 
@@ -27,6 +27,7 @@ const flux3 = (function(elements, modal, {
   const content = document.querySelector('#content');
   const toolbar = document.querySelector('#toolbar');
   const closeOut = document.querySelector('#closeOut');
+  const eqationsPanel = document.querySelector('[data-mthlib]');
   const toolbox = document.querySelector('#toolbar > div[data-tools-main]');
   const extensions = document.querySelector('#toolbar > div[data-tools-ext]');
 
@@ -37,6 +38,8 @@ const flux3 = (function(elements, modal, {
   toolbox.appendChild(createElement('i.separator'));
   toolbox.appendChild(createElement('button[title="Unwrap" data-action="unwrap"]' , '<i class="material-icons">content_cut</i>'));
 
+  // Equations Panel scrollbar.
+  scrollbar.initialize(eqationsPanel);
 
   // ---- Helpers ----------------
 
@@ -47,6 +50,9 @@ const flux3 = (function(elements, modal, {
     tool.extend.forEach(addToolButton(extensions, true));
     extensions.classList.add('open');
   };
+
+  const reRenderMath = () =>
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, renderMath]);
 
 
   // ---- Local history ----------
@@ -74,7 +80,7 @@ const flux3 = (function(elements, modal, {
     if (!backup.content) return alert('Backup copy does not exist!');
     else {
       content.innerHTML = backup.content;
-      MathJax.Hub.Queue(["Typeset", MathJax.Hub, renderMath]);
+      reRenderMath();
     }
   };
 
@@ -94,9 +100,17 @@ const flux3 = (function(elements, modal, {
     // Remove styles before paste.
     document.execCommand("insertHTML", false, clipContent);
 
-    // Render math when paste into math node.
-    if (event.target.matches('div[data-type=math]')) {
-      MathJax.Hub.Queue(["Typeset", MathJax.Hub, renderMath]);
+    // Search for equations and add it to the equationsPanel.
+    if (~clipContent.indexOf('<math>')) {
+      Array.from(createElement('div', clipContent).querySelectorAll('math'))
+        .forEach(math => {
+          const hash = base64(math.outerHTML);
+          if (!~state.equations.indexOf(hash)) {
+            state.equations.push(hash);
+            eqationsPanel.firstElementChild.appendChild(createElement('button[data-action="addEq"]', math.outerHTML));
+          }
+        });
+      reRenderMath();
     }
   };
 
@@ -144,7 +158,7 @@ const flux3 = (function(elements, modal, {
     }
   };
 
-  // Handle alternative actions. Alt + Click.
+  // Handle alternative content actions. Alt + Click.
   const detectAltActions = ({target, altKey}) => {
     if (!altKey) return;
 
@@ -154,7 +168,29 @@ const flux3 = (function(elements, modal, {
 
     // Detect request for imege alt text modal.
     if (target.matches('div[data-type=media]')) modal.show(target);
+  };
 
+  // Add selected equation in place of cursor.
+  const addEquation = ({target, altKey}) => {
+    if (!target.matches('button')) return;
+
+    // Delete equation button. 'Alt + LMB + Button'.
+    if (altKey) {
+      const index = state.equations.indexOf(base64(target.querySelector('script').textContent));
+      if (index > -1 ) state.equations.splice(index, 1);
+      return target.parentNode.removeChild(target);
+    }
+
+    // Add Equarion.
+    const selection = window.getSelection();
+    if (selection.anchorNode && isInContent(selection.anchorNode) ) {
+      const range = selection.getRangeAt(0);
+      const selectedText = range.toString();
+      if (selectedText.length === 0) {
+        range.insertNode(elFromString(target.querySelector('script').textContent));
+        reRenderMath();
+      }
+    }
   };
 
   const keyboardActions = ({altKey, shiftKey, ctrlKey, key, keyCode}) => {
@@ -169,6 +205,9 @@ const flux3 = (function(elements, modal, {
 
     // Restore content draft. 'Alt + s'.
     if (altKey && key === 'r') restoreContent();
+
+    // Toggle eqquations panel. 'Ctrl + Space'.
+    if (ctrlKey && key === ' ') eqationsPanel.classList.toggle('show');
 
     // Display CNXML. 'Alt + x'.
     if (altKey && key === 'x') {
@@ -186,6 +225,7 @@ const flux3 = (function(elements, modal, {
   };
 
 
+
   // ---- Event listeners --------
 
   flux3.addEventListener('click', toggleIntro);
@@ -195,5 +235,6 @@ const flux3 = (function(elements, modal, {
   content.addEventListener("paste", pasteController);
   content.addEventListener('click', detectAltActions);
   document.addEventListener('keyup', keyboardActions);
+  eqationsPanel.addEventListener('click', addEquation);
 
-}(cnxmlElements, Modal, utils));
+}(cnxmlElements, Modal, Ps, utils));

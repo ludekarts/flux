@@ -123,11 +123,18 @@ const utils = (function(travrs, toCnxml) {
   const copyAttrs = (from, to) =>
     Array.from(from.attributes).forEach(attr => to.setAttribute(attr.name, attr.value));
 
+  // Encode Base 64
+  const base64 = (str) =>
+    btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) =>
+      String.fromCharCode('0x' + p1)
+    ));
+
   // To CNXML module.
   const toCNXML = toCnxml(uid, copyAttrs, createElement);
 
   return {
     uid,
+    base64,
     template,
     formatXml,
     copyAttrs,

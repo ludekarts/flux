@@ -1,5 +1,5 @@
 const Modal = (function() {
-  const modal = document.querySelector('aside[data-modal]');
+  const modal = document.querySelector('div[data-modal]');
   const content = modal.querySelector('.content');
   let currentTarget;
 
