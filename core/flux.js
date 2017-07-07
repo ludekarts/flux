@@ -3,7 +3,7 @@
 
 const flux3 = (function(elements, modal, scrollbar, {
   uid, elemntsToCnxml, createElement, elFromString, addToolButton, unwrapElement,
-  insertSiblingNode, renderMath, toCnxml, cleanMath, formatXml, base64
+  insertSiblingNode, wrapMath, toCnxml, cleanMath, formatXml, base64
 }) {
 
   // Global state.
@@ -53,8 +53,10 @@ const flux3 = (function(elements, modal, scrollbar, {
     extensions.classList.add('open');
   };
 
+  const wrapEquation = wrapMath(content);
+
   const reRenderMath = () =>
-    MathJax.Hub.Queue(["Typeset", MathJax.Hub, renderMath]);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, wrapEquation]);
 
   const confirmAnimation = () => {
     confirm.classList.add('show')
@@ -71,7 +73,7 @@ const flux3 = (function(elements, modal, scrollbar, {
       const hash = base64(content);
       if (!~state.equations.indexOf(hash)) {
         state.equations.push(hash);
-        equationsPanel.firstElementChild.appendChild(createElement('button[data-action="addEq"]', content));
+        equationsPanel.firstElementChild.insertBefore(createElement('button[data-action="addEq"]', content), equationsPanel.firstElementChild.firstChild);
       }
     });
     reRenderMath();
@@ -80,19 +82,20 @@ const flux3 = (function(elements, modal, scrollbar, {
   // ---- Local history ----------
 
   const recordAction = () => {
-    state.history.push(content.innerHTML);
+    state.history.push(cleanMath(content.cloneNode(true)).innerHTML);
   };
 
   const restoreAction = () => {
     content.innerHTML = state.history.length > 0 ? state.history.pop() : '';
+    reRenderMath();
   };
 
   const backupContent = () => {
     try {
-      const math = Array.from(equationsPanel.querySelectorAll('script')).map(eq => eq.textContent);
+      const math = Array.from(equationsPanel.querySelectorAll('script')).reverse().map(eq => eq.textContent);
       localStorage.setItem('flux3-ct-backup', JSON.stringify({
         math: math,
-        content: cleanMath(content.cloneNode(true)).innerHTML 
+        content: cleanMath(content.cloneNode(true)).innerHTML
       }));
     } catch (error) {
       console.error(error);
@@ -121,6 +124,8 @@ const flux3 = (function(elements, modal, scrollbar, {
 
     // Clean clipboard data.
     const clipContent = event.clipboardData.getData('text/plain')
+      // Remove empty labels.
+      .replace(/<label\s*?\/>/g,'')
       //Replace links.
       .replace(/<link(.+?)\/>/g, (match, attrs) => `<reference ${attrs}>Reference</reference>`)
       // Remove MathML namespace.
@@ -214,7 +219,11 @@ const flux3 = (function(elements, modal, scrollbar, {
     }
   };
 
-  const keyboardActions = ({altKey, shiftKey, ctrlKey, key, keyCode}) => {
+  const keyboardActions = (event) => {
+    event.preventDefault();
+
+    const {altKey, shiftKey, ctrlKey, key, keyCode} = event;
+
     // Close extension panel. 'Esc'.
     if (key === 'Escape') extensions.classList.remove('open');
 
@@ -228,7 +237,7 @@ const flux3 = (function(elements, modal, scrollbar, {
     if (altKey && key === 'r') restoreContent();
 
     // Toggle eqquations panel. 'Ctrl + Space'.
-    if (ctrlKey && key === ' ') equationsPanel.classList.toggle('show');
+    if (ctrlKey && key === ' ') return equationsPanel.classList.toggle('show');
 
     // Display CNXML. 'Alt + x'.
     if (altKey && key === 'x') {

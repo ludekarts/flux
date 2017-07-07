@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>LaTeX to MathML</title>
+    <style>
+    *{
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      font-family: 'Verdana';
+    }
+
+    body {
+      background: #f5f5f5;
+    }
+
+    section {
+      width: 980px;
+      margin: 10px auto;
+    }
+
+    textarea {
+      width: 100%;
+      display: block;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+    }
+
+    #input {
+      text-align: center;
+      padding: 15px 15px 0px 15px;
+    }
+
+    #output {
+      width: 100%;
+      padding: 25px;
+      display: block;
+      background: white;
+      text-align: center;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+    }
+
+    #mml {
+      min-height: 350px;
+    }
+    </style>
+
+    <script type="text/javascript">
+      window.MathJax = {
+        showProcessingMessages: false,
+        messageStyle: "none",
+        tex2jax: {
+          inlineMath: [["$", "$"]]
+        }
+      };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" charset="utf-8"></script>
+  </head>
+  <body>
+
+    <section id="main">
+      <h3>LaTeX</h3>
+      <textarea id="input"></textarea>
+
+      <h3>MathJax</h3>
+      <div id="output">
+        $\infty$
+      </div>
+
+      <h3>MathML</h3>
+      <textarea id="mml"></textarea>
+    </section>
+
+
+    <script type="text/javascript">
+    (function() {
+
+      const mml = document.getElementById('mml');
+      const input = document.getElementById('input');
+
+      let equation;
+
+      //  Get the element jax when MathJax has produced it.
+      MathJax.Hub.queue.Push(() => {
+        equation = MathJax.Hub.getAllJax("output")[0];
+        console.log(equation);
+      });
+
+      const showMML = () => {
+        mml.value = equation.root.toMathML()
+          // Remove xmlns.
+          .replace(/\sxmlns="http:\/\/www.w3.org\/1998\/Math\/MathML"/g, '')
+          // Add namespace prefix.
+          .replace(/(<m|<\/m)/g, (match) => match === '<m' ? '<m:m' : '</m:m');
+      };
+
+      const transform = (event) => {
+        MathJax.Hub.queue.Push(["Text", equation, "\\displaystyle{" + event.target.value + "}", showMML]);
+      };
+
+      input.addEventListener("blur", transform);
+
+    }());
+    </script>
+  </body>
+</html>
+
+<!--
+
+//
+//  Use a closure to hide the local variables from the
+//  global namespace
+//
+(function() {
+  var QUEUE = MathJax.Hub.queue; // shorthand for the queue
+  var math = null,
+    box = null; // the element jax for the math output, and the box it's in
+
+  //
+  //  Hide and show the box (so it doesn't flicker as much)
+  //
+  var HIDEBOX = function() {
+    box.style.visibility = "hidden"
+  }
+  var SHOWBOX = function() {
+    box.style.visibility = "visible"
+  }
+
+  //
+  //  Get the element jax when MathJax has produced it.
+  //
+  QUEUE.Push(function() {
+    math = MathJax.Hub.getAllJax("MathOutput")[0];
+    box = document.getElementById("box");
+    SHOWBOX(); // box is initially hidden so the braces don't show
+  });
+
+  //
+  //  The onchange event handler that typesets the math entered
+  //  by the user.  Hide the box, then typeset, then show it again
+  //  so we don't see a flash as the math is cleared and replaced.
+  //
+  window.UpdateMath = function(TeX) {
+    QUEUE.Push(HIDEBOX, ["Text", math, "\\displaystyle{" + TeX + "}"], SHOWBOX);
+  }
+})();
+-->

@@ -6,7 +6,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Section',
     icon: '<i class="material-icons">view_stream</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="section">Content here.</div>`,
+      `<div id="${uid()}" data-type="section">CONTENT</div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="section"]`)
   };
@@ -17,7 +17,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Title',
     icon: '<i class="material-icons">title</i>',
     template: (uid) =>
-      `<div data-type="title">Title here.</div>`,
+      `<div data-type="title">TITLE</div>`,
     wrapp: (uid) =>
       createElement(`div[data-type="title"]`)
   };
@@ -28,7 +28,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Paragraph',
     icon: '<i class="material-icons">subject</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="para">Content here.</div>`,
+      `<div id="${uid()}" data-type="para">PARA</div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="para"]`)
   };
@@ -39,7 +39,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Term',
     icon: '<i class="material-icons">book</i>',
     template: (uid) =>
-      `<term>Term here.</term>`,
+      `<term>TERM</term>`,
     wrapp: (uid) =>
       createElement(`term`)
   };
@@ -50,7 +50,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Reference',
     icon: '<i class="material-icons">link</i>',
     template: (uid) =>
-      `<reference>Reference here.</reference>`,
+      `<reference>REFERENCE</reference>`,
     wrapp: (uid) =>
       createElement(`reference`)
   };
@@ -61,7 +61,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Note',
     icon: '<i class="material-icons">receipt</i>',
     template: (uid) =>
-      `<div data-type="note">Content here.</div>`,
+      `<div data-type="note">CONTENT</div>`,
     wrapp: (uid) =>
       createElement(`div[data-type="note"]`)
   };
@@ -73,7 +73,7 @@ const cnxmlElements = (function({createElement}) {
     icon: '<i class="material-icons">assignment_late</i>',
     template: (uid) =>
       `<div id="${uid()}" data-type="problem">
-        <div id="${uid()}" data-type="para">Problem here.</div>
+        <div id="${uid()}" data-type="para">PROBLEM</div>
       </div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="problem"]`)
@@ -86,7 +86,7 @@ const cnxmlElements = (function({createElement}) {
     icon: '<i class="material-icons">assignment_turned_in</i>',
     template: (uid) =>
       `<div id="${uid()}" data-type="solution">
-        <div id="${uid()}" data-type="para">Solution here.</div>
+        <div id="${uid()}" data-type="para">SOLUTION</div>
       </div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="solution"]`)
@@ -101,10 +101,10 @@ const cnxmlElements = (function({createElement}) {
     template: (uid) =>
       `<div id="${uid()}" data-type="exercise">
         <div id="${uid()}" data-type="problem">
-          <div id="${uid()}" data-type="para">Problem here.</div>
+          <div id="${uid()}" data-type="para">PROBLEM</div>
         </div>
         <div id="${uid()}" data-type="solution">
-          <div id="${uid()}" data-type="para">Solution here.</div>
+          <div id="${uid()}" data-type="para">SOLUTION</div>
         </div>
       </div>`,
     wrapp: (uid) =>
@@ -117,7 +117,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Caption',
     icon: '<i class="material-icons">short_text</i>',
     template: (uid) =>
-      `<div data-type="caption">Caption here.</div>`,
+      `<div data-type="caption">CAPTION</div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="caption"]`)
   };
@@ -143,12 +143,12 @@ const cnxmlElements = (function({createElement}) {
     icon: '<i class="material-icons">image</i>',
     template: (uid) =>
       `<div id="${uid()}" data-type="figure">
-        <div data-type="title">Title here.</div>
+        <div data-type="title">TITLE</div>
         <div id="${uid()}" data-type="media" alt="alt text here">
           <img src="images/empty.jpg" mime-type="image/jpeg" />
         </div>
         <div data-type="caption">
-          Caption here.
+          CAPTION
         </div>
       </div>`,
     wrapp: (uid) =>
@@ -161,7 +161,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'List Item',
     icon: '<i class="material-icons">label</i>',
     template: (uid) =>
-      `<div data-type="item">Item here.</div>`,
+      `<div data-type="item">ITEM</div>`,
     wrapp: (uid) =>
       createElement(`div[data-type="item"]`)
   };
@@ -174,8 +174,8 @@ const cnxmlElements = (function({createElement}) {
     icon: '<i class="material-icons">list</i>',
     template: (uid) =>
       `<div id="${uid()}" data-type="list">
-        <div data-type="title">Title here.</div>
-        <div data-type="item">Item here.</div>
+        <div data-type="title">TITLE</div>
+        <div data-type="item">ITEM</div>
       </div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="list"]`)
@@ -192,19 +192,20 @@ const cnxmlElements = (function({createElement}) {
   //     createElement(`div[data-type="math"]`)
   // };
 
-  // <eqiation>
-  const eqiation = {
-    tag: 'eqiation',
-    title: 'Eqiation',
+  // <equation>
+  const equation = {
+    tag: 'equation',
+    title: 'Equation',
     icon: '<i class="material-icons">functions</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="eqiation">
-        <div data-type="title">Title here.</div>
+      `<div id="${uid()}" data-type="equation">
+        <div data-type="title">TITLE</div>
         <div data-type="math">MATH</div>
       </div>`,
     wrapp: (uid) =>
-      createElement(`div[id="${uid()}" data-type="eqiation"]`)
+      createElement(`div[id="${uid()}" data-type="equation"]`)
   }
 
-  return [section, title, para, note, list, exercise, reference, figure, eqiation, term];
+  // Export elements.
+  return [section, title, para, note, list, exercise, reference, figure, equation, term];
 }(utils));

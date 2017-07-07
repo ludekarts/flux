@@ -105,13 +105,13 @@ const utils = (function(travrs, toCnxml) {
   };
 
   // Pares Equations.
-  const renderMath = () => {
+  const wrapMath = (content) => () => {
     // Render all math and apply click wrapper.
-    MathJax.Hub.getAllJax().forEach(math => {
+    MathJax.Hub.getAllJax(content).forEach(math => {
       const equation = document.getElementById(`${math.inputID}-Frame`);
       // MathJax generate 3 nodes per equation -> wrap them all in one.
-      if (!equation.parentNode.classList.contains('flux-math')) {
-        const wrapper =  wrapElement([equation.previousSibling, equation, equation.nextSibling], 'span');
+      if (!equation.parentNode.matches('span.flux-math')) {
+        const wrapper = wrapElement([equation.previousSibling, equation, equation.nextSibling], 'span');
         wrapper.className = 'flux-math';
         wrapper.dataset.mathId = math.inputID;
         wrapper.setAttribute('contenteditable', false);
@@ -136,9 +136,9 @@ const utils = (function(travrs, toCnxml) {
     uid,
     base64,
     template,
+    wrapMath,
     formatXml,
     copyAttrs,
-    renderMath,
     wrapElement,
     elFromString,
     createElement,
