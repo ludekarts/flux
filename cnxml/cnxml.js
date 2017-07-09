@@ -61,9 +61,9 @@ const cnxmlElements = (function({createElement}) {
     title: 'Note',
     icon: '<i class="material-icons">receipt</i>',
     template: (uid) =>
-      `<div data-type="note">CONTENT</div>`,
+      `<div id="${uid()}" data-type="note">CONTENT</div>`,
     wrapp: (uid) =>
-      createElement(`div[data-type="note"]`)
+      createElement(`div[id="${uid()}" data-type="note"]`)
   };
 
   // <problem>
@@ -119,7 +119,7 @@ const cnxmlElements = (function({createElement}) {
     template: (uid) =>
       `<div data-type="caption">CAPTION</div>`,
     wrapp: (uid) =>
-      createElement(`div[id="${uid()}" data-type="caption"]`)
+      createElement(`div[data-type="caption"]`)
   };
 
   // <media>
@@ -179,23 +179,25 @@ const cnxmlElements = (function({createElement}) {
       </div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="list"]`)
-  }
+  };
 
-  // Content with math.
-  // const ctm = {
-  //   tag: 'math',
-  //   title: 'Content with math',
-  //   icon: '<i class="material-icons">code</i>',
-  //   template: (uid) =>
-  //     `<div data-type="math">MATH</div>`,
-  //   wrapp: (uid) =>
-  //     createElement(`div[data-type="math"]`)
-  // };
+
+  // Math wrapper
+  const math = {
+    tag: 'math',
+    title: 'Content with math',
+    icon: '<i class="material-icons">plus_one</i>',
+    template: (uid) =>
+      `<div data-type="math">MATH</div>`,
+    wrapp: (uid) =>
+      createElement(`div[data-type="math"]`)
+  };
 
   // <equation>
   const equation = {
     tag: 'equation',
     title: 'Equation',
+    extend: [math],
     icon: '<i class="material-icons">functions</i>',
     template: (uid) =>
       `<div id="${uid()}" data-type="equation">
@@ -204,8 +206,47 @@ const cnxmlElements = (function({createElement}) {
       </div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="equation"]`)
-  }
+  };
+
+  // <example>.
+  const example = {
+    tag: 'example',
+    title: 'Example',
+    icon: '<i class="material-icons">playlist_add_check</i>',
+    template: (uid) =>
+      `<div id="${uid()}" data-type="example">EXAMPLE</div>`,
+    wrapp: (uid) =>
+      createElement(`div[id="${uid()}" data-type="example"]`)
+  };
+
+  // <meaning>.
+  const meaning = {
+    tag: 'meaning',
+    title: 'Meaning',
+    icon: '<i class="material-icons">subtitles</i>',
+    template: (uid) =>
+      `<div id="${uid()}" data-type="meaning">MEANING</div>`,
+    wrapp: (uid) =>
+      createElement(`div[id="${uid()}" data-type="meaning"]`)
+  };
+
+  // <definition>
+  const definition = {
+    tag: 'definition',
+    title: 'Definition',
+    extend: [meaning, example],
+    icon: '<i class="material-icons">check_box</i>',
+    template: (uid) =>
+      `<div id="${uid()}" data-type="definition">
+        <term>TERM</term>
+        <div id="${uid()}" data-type="meaning">MEANING</div>
+        <div id="${uid()}" data-type="example">EXAMPLE</div>
+      </div>`,
+    wrapp: (uid) =>
+      createElement(`div[id="${uid()}" data-type="definition"]`)
+  };
+
 
   // Export elements.
-  return [section, title, para, note, list, exercise, reference, figure, equation, term];
+  return [section, title, para, note, list, exercise, reference, figure, equation, term, example, definition];
 }(utils));

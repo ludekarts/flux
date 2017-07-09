@@ -32,14 +32,7 @@
       </aside>
 
       <div data-modal>
-        <div class="content">
-          <input type="text" placeholder="Image Name">
-          <textarea name="name" placeholder="Alt text"></textarea>
-        </div>
-        <div class="buttons">
-          <button data-action="save">Save</button>
-          <button data-action="cancel">Cancel</button>
-        </div>
+        <!-- Dynamic content -->
       </div>
 
       <div id="out">
@@ -53,21 +46,31 @@
         <hr>
 
         <h3>Keyboard shortcuts</h3>
+
+        <h4>Add Elements</h4>
         <ul>
-          <li><code>Alt + x</code> - Show CNXML source</li>
-          <li><code>Alt + s</code> - Save local copy</li>
-          <li><code>Alt + r</code> - Restore local copy</li>
-          <li><code>Esc</code> - Hide extension menu</li>
-          <li><code>Alt + Space</code> - Toggle Equations Panel</li>
-          <li><code>Ctrl + Shift + z</code> - Undo add element action</li>
-          <li><code>Alt + LMB + EqButton</code> - Remove equation button from Equations panel</li>
+          <li><code>Alt + LMB + Tool</code> - Add element as a sibling of focused element</li>
+          <li><code>Alt + Ctrl + LMB + Tool</code> - Add element as a last in the content</li>
         </ul>
 
-        <h3>Alternative Content Operations</h3>
+        <h4>More Options</h4>
         <ul>
-          <li><code>Alt + LMB + Image</code> - Open image attribute modal (src & alt)</li>
-          <li><code>Alt + LMB + element in content</code> - Open extension menu if exist</li>
-          <li><code>Alt + LMB + Tool</code> - Add element as a sibling of current element</li>
+          <li><code>Alt + LMB on Image</code> - Open image attributes modal</li>
+          <li><code>Alt + LMB on Equarion</code> - Open LaTeX input modal</li>
+          <li><code>Alt + LMB on Reference</code> - Open reference attributes modal</li>
+          <li><code>Alt + LMB om Content's element</code> - Open extension menu (if exist)</li>
+          <li><code>Esc</code> - Hide extension menu</li>
+          <li><code>Ctrl + Space</code> - Toggle Equations Panel</li>
+          <li><code>Alt + LMB on Equarion Button</code> - Remove equation from Equations Panel</li>
+        </ul>
+
+        <h4>Save & View</h4>
+        <ul>
+          <li><code>Alt + s</code> - Save local copy</li>
+          <li><code>Alt + r</code> - Restore local copy</li>
+          <li><code>Alt + x</code> - Show CNXML source</li>
+          <li><code>Ctrl + Shift + z</code> - Undo "add element" action</li>
+          <li><code>Ctrl + LMB on Content's element</code> - Copy element ID into the clipboard</li>
         </ul>
 
         <button id="close">Close</button>
@@ -76,6 +79,8 @@
       <div id="confirm" class="confirm">
         <i class="material-icons">verified_user</i> <span>Saved</span>
       </div>
+
+      <input id="clipInput">
     </section>
 
     <script src="core/vendor/perfect-scrollbar.min.js" charset="utf-8"></script>

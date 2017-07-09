@@ -156,12 +156,17 @@ div[data-tools-ext].open {
 
 #intro h3 {
   margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+#intro h4 {
+  margin-top: 10px;
 }
 
 #out > button,
 #intro > button {
-  left: 50%;
-  bottom: 5%;
+  top: 26px;
+  right: 10px;
   width: 120px;
   height: 35px;
   background: #ccc;
@@ -242,7 +247,7 @@ div[data-modal] > .content {
   margin: 10px;
 }
 
-div[data-modal] > .content input {
+div[data-modal] > .content input[type=text] {
   width: 100%;
   border: none;
   padding: 10px;
@@ -254,17 +259,37 @@ div[data-modal] > .content textarea {
   border: none;
   padding: 10px;
   display: block;
-  margin-top: 10px;
+  margin: 10px 0;
 }
 
-div[data-modal] > .buttons {
+div[data-modal] .buttons {
+  width: 40%;
   text-align: right;
-  padding-bottom: 7px;
-  padding-right: 10px;
+  display: inline-block;
+}
+
+div[data-modal] .buttons.media {
+  width: 100%;
+  display: block;
+}
+
+div[data-modal] .radios {
+  width: 60%;
+  font-size: 13px;
+  text-align: left;
+  display: inline-block;
+}
+
+div[data-modal] .radios label {
+  margin-right: 5px;
+}
+div[data-modal] .radios input {
+  vertical-align: bottom;
 }
 
 
 /* MATH LIBRARY */
+
 aside {
   top: 44px;
   bottom: 0;
@@ -345,4 +370,14 @@ aside > .buttons > button:before {
   30% { left: 5px; }
   60% { left: 5px; }
   100% { left: -95px; }
+}
+
+
+/* CLIPBOARD INPUT */
+
+#clipInput {
+  opacity: 0;
+  z-index: -10;
+  left: -9999px;
+  position: absolute;
 }

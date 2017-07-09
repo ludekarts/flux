@@ -28,6 +28,7 @@ const flux3 = (function(elements, modal, scrollbar, {
   const content = document.querySelector('#content');
   const toolbar = document.querySelector('#toolbar');
   const closeOut = document.querySelector('#closeOut');
+  const clipInput = document.querySelector('#clipInput');
   const equationsPanel = document.querySelector('[data-mthlib]');
   const toolbox = document.querySelector('#toolbar > div[data-tools-main]');
   const extensions = document.querySelector('#toolbar > div[data-tools-ext]');
@@ -140,8 +141,9 @@ const flux3 = (function(elements, modal, scrollbar, {
     }
   };
 
+
   // Detect user actions.
-  const detectAction = ({target, altKey}) => {
+  const detectAction = ({target, altKey, ctrlKey}) => {
 
     // Detect action.
     const action = target.dataset.action;
@@ -172,7 +174,9 @@ const flux3 = (function(elements, modal, scrollbar, {
       (selectedText.length > 0)
         ? range.surroundContents(tool.wrapp(uid))
         : altKey
-          ? insertSiblingNode(selection.anchorNode, elFromString(tool.template(uid)))
+          ? ctrlKey
+            ? content.appendChild(elFromString(tool.template(uid)))
+            : insertSiblingNode(selection.anchorNode, elFromString(tool.template(uid)))
           : range.insertNode(elFromString(tool.template(uid)));
 
       // Prevent from multiple wrapping in the same spot.
@@ -184,16 +188,27 @@ const flux3 = (function(elements, modal, scrollbar, {
     }
   };
 
+
   // Handle alternative content actions. Alt + Click.
-  const detectAltActions = ({target, altKey}) => {
-    if (!altKey) return;
+  const detectAltActions = ({target, altKey, ctrlKey}) => {
 
     // Detect request for extension menu.
-    if (state.cnxml[target.dataset.type] && state.cnxml[target.dataset.type].extend) openExtensionPanel(state.cnxml[target.dataset.type]);
+    if (altKey && state.cnxml[target.dataset.type] && state.cnxml[target.dataset.type].extend) openExtensionPanel(state.cnxml[target.dataset.type]);
     else extensions.classList.remove('open');
 
     // Detect request for imege alt text modal.
-    if (target.matches('div[data-type=media]')) modal.show(target);
+    if (altKey && target.matches('div[data-type=media]')) modal.show(target);
+
+    // Detect request for reference modal.
+    if (altKey && target.matches('reference')) modal.show(target);
+
+    // Detect request for element ID.
+    if (ctrlKey) {
+      clipInput.value = target.id;
+      clipInput.select();
+      document.execCommand('copy');
+      console.log('Copy ID: ' + target.id);
+    }
   };
 
   // Add selected equation in place of cursor.
@@ -203,7 +218,7 @@ const flux3 = (function(elements, modal, scrollbar, {
     // Delete equation button. 'Alt + LMB + Button'.
     if (altKey) {
       const index = state.equations.indexOf(base64(target.querySelector('script').textContent));
-      if (index > -1 ) state.equations.splice(index, 1);
+      if (index > -1) state.equations.splice(index, 1);
       return target.parentNode.removeChild(target);
     }
 
@@ -242,7 +257,7 @@ const flux3 = (function(elements, modal, scrollbar, {
     // Display CNXML. 'Alt + x'.
     if (altKey && key === 'x') {
       out.classList.add('show');
-      out.firstElementChild.innerHTML = formatXml(toCnxml(content));
+      out.firstElementChild.value = formatXml(toCnxml(content));
     }
   };
 
