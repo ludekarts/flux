@@ -6,7 +6,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Section',
     icon: '<i class="material-icons">view_stream</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="section">CONTENT</div>`,
+      `<div id="${uid()}" data-type="section">CONTENT</div><br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="section"]`)
   };
@@ -28,7 +28,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Paragraph',
     icon: '<i class="material-icons">subject</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="para">PARA</div>`,
+      `<div id="${uid()}" data-type="para">PARA</div><br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="para"]`)
   };
@@ -61,7 +61,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Note',
     icon: '<i class="material-icons">receipt</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="note">CONTENT</div>`,
+      `<div id="${uid()}" data-type="note">CONTENT</div><br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="note"]`)
   };
@@ -74,7 +74,8 @@ const cnxmlElements = (function({createElement}) {
     template: (uid) =>
       `<div id="${uid()}" data-type="problem">
         <div id="${uid()}" data-type="para">PROBLEM</div>
-      </div>`,
+      </div>
+      <br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="problem"]`)
   };
@@ -87,7 +88,8 @@ const cnxmlElements = (function({createElement}) {
     template: (uid) =>
       `<div id="${uid()}" data-type="solution">
         <div id="${uid()}" data-type="para">SOLUTION</div>
-      </div>`,
+      </div>
+      <br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="solution"]`)
   };
@@ -106,7 +108,8 @@ const cnxmlElements = (function({createElement}) {
         <div id="${uid()}" data-type="solution">
           <div id="${uid()}" data-type="para">SOLUTION</div>
         </div>
-      </div>`,
+      </div>
+      <br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="exercise"]`)
   };
@@ -117,7 +120,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Caption',
     icon: '<i class="material-icons">short_text</i>',
     template: (uid) =>
-      `<div data-type="caption">CAPTION</div>`,
+      `<div data-type="caption">CAPTION</div><br/>`,
     wrapp: (uid) =>
       createElement(`div[data-type="caption"]`)
   };
@@ -130,7 +133,8 @@ const cnxmlElements = (function({createElement}) {
     template: (uid) =>
       `<div id="${uid()}" data-type="media" alt="alt text here">
         <img src="images/empty.jpg" mime-type="image/jpeg" />
-      </div>`,
+      </div>
+      <br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="media" alt="alt text here"]`, '<img src="images/empty.jpg" mime-type="image/jpeg" />')
   };
@@ -150,7 +154,8 @@ const cnxmlElements = (function({createElement}) {
         <div data-type="caption">
           CAPTION
         </div>
-      </div>`,
+      </div>
+      <br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="figure"]`)
   };
@@ -161,7 +166,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'List Item',
     icon: '<i class="material-icons">label</i>',
     template: (uid) =>
-      `<div data-type="item">ITEM</div>`,
+      `<div data-type="item">ITEM</div><br/>`,
     wrapp: (uid) =>
       createElement(`div[data-type="item"]`)
   };
@@ -176,7 +181,8 @@ const cnxmlElements = (function({createElement}) {
       `<div id="${uid()}" data-type="list">
         <div data-type="title">TITLE</div>
         <div data-type="item">ITEM</div>
-      </div>`,
+      </div>
+      <br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="list"]`)
   };
@@ -203,7 +209,8 @@ const cnxmlElements = (function({createElement}) {
       `<div id="${uid()}" data-type="equation">
         <div data-type="title">TITLE</div>
         <div data-type="math">MATH</div>
-      </div>`,
+      </div>
+      <br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="equation"]`)
   };
@@ -214,7 +221,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Example',
     icon: '<i class="material-icons">playlist_add_check</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="example">EXAMPLE</div>`,
+      `<div id="${uid()}" data-type="example">EXAMPLE</div><br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="example"]`)
   };
@@ -225,7 +232,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Meaning',
     icon: '<i class="material-icons">subtitles</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="meaning">MEANING</div>`,
+      `<div id="${uid()}" data-type="meaning">MEANING</div><br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="meaning"]`)
   };
@@ -241,7 +248,8 @@ const cnxmlElements = (function({createElement}) {
         <term>TERM</term>
         <div id="${uid()}" data-type="meaning">MEANING</div>
         <div id="${uid()}" data-type="example">EXAMPLE</div>
-      </div>`,
+      </div>
+      <br/>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="definition"]`)
   };

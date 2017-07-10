@@ -86,7 +86,9 @@ const utils = (function(travrs, toCnxml) {
   };
 
   const insertSiblingNode = (target, node) => {
-    target.nodeType === 3 ? target.parentNode.parentNode.appendChild(node) : target.parentNode.appendChild(node);
+    const current = target.nodeType === 3 ? target.parentNode : target;
+    const parent = current.parentNode;
+    parent.lastElementChild === current ? parent.appendChild(node) : parent.insertBefore(node, current.nextSibling);
   }
 
   // Wrap 'elements' with HTMLElement of given 'type' with provided 'attrs'.
@@ -141,6 +143,40 @@ const utils = (function(travrs, toCnxml) {
       String.fromCharCode('0x' + p1)
     ));
 
+  // Debounce callback fn.
+  const debounce = (callback, wait, immediate) => {
+  	let timeout;
+  	return (...args) => {
+  		const later = () => {
+  			timeout = null;
+  			if (!immediate) callback.apply(this, args);
+  		};
+  		clearTimeout(timeout);
+  		timeout = setTimeout(later, wait);
+  		if (immediate && !timeout) callback.apply(this, args);
+  	};
+  };
+
+  // Create a looping stack.
+  const loopstack = (length, counter = 0) => {
+    const stack = new Array(length);
+    let head = '';
+    return {
+      push (item) {
+        if (!item) return;
+        stack[counter] = item;
+        counter = (counter === length - 1) ? 0 : (counter += 1);
+        // console.log(stack);
+      },
+      pull (def) {
+        counter = (counter === 0) ? length - 1 : (counter -= 1);
+        head = stack[counter];
+        stack[counter] = undefined;
+        return head || def;
+      }
+    }
+  };
+
   // To CNXML module.
   const toCNXML = toCnxml(uid, copyAttrs, createElement);
 
@@ -148,7 +184,9 @@ const utils = (function(travrs, toCnxml) {
     uid,
     base64,
     template,
+    debounce,
     wrapMath,
+    loopstack,
     formatXml,
     copyAttrs,
     updateMath,

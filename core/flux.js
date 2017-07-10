@@ -3,13 +3,13 @@
 
 const flux3 = (function(elements, modal, scrollbar, {
   uid, elemntsToCnxml, createElement, elFromString, addToolButton, unwrapElement,
-  insertSiblingNode, wrapMath, toCnxml, cleanMath, formatXml, base64
+  insertSiblingNode, wrapMath, toCnxml, cleanMath, formatXml, base64, debounce, loopstack
 }) {
 
   // Global state.
   const state = {
-    history: [],
     equations: [],
+    history: loopstack(15),
     cnxml: elemntsToCnxml(elements)
   };
 
@@ -59,8 +59,8 @@ const flux3 = (function(elements, modal, scrollbar, {
 
   const wrapEquation = wrapMath(content);
 
-  const reRenderMath = () =>
-    MathJax.Hub.Queue(["Typeset", MathJax.Hub, wrapEquation]);
+  const reRenderMath = (callback) =>
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, wrapEquation, callback]);
 
   const confirmAnimation = () => {
     confirm.classList.add('show')
@@ -90,7 +90,10 @@ const flux3 = (function(elements, modal, scrollbar, {
   };
 
   const restoreAction = () => {
-    content.innerHTML = state.history.length > 0 ? state.history.pop() : '';
+    // content.innerHTML = state.history.length > 0 ? state.history.pop() : '';
+    const ct = state.history.pull();
+    if (!ct) return;
+    content.innerHTML = ct;
     reRenderMath();
   };
 
@@ -142,7 +145,13 @@ const flux3 = (function(elements, modal, scrollbar, {
     if (~clipContent.indexOf('<math>')) {
       addEquations(Array.from(createElement('div', clipContent).querySelectorAll('math')));
     }
+
+    recordAction();
   };
+
+  const saveHistory = debounce(({ctrlKey, key}) => {
+    if (!ctrlKey && key !== 'Escape') state.history.push(cleanMath(content.cloneNode(true)).innerHTML);
+  }, 300);
 
 
   // Detect user actions.
@@ -151,9 +160,6 @@ const flux3 = (function(elements, modal, scrollbar, {
     // Detect action.
     const action = target.dataset.action;
     if (!action) return extensions.classList.remove('open');
-
-    // Add entry to the local history.
-    recordAction();
 
     // Intersect unwrap action.
     if (action === 'unwrap') return unwrapElement();
@@ -189,6 +195,9 @@ const flux3 = (function(elements, modal, scrollbar, {
       // Add at the end.
       content.appendChild(elFromString(tool.template(uid)));
     }
+
+    // Add entry to the local history.
+    recordAction();
   };
 
 
@@ -197,7 +206,6 @@ const flux3 = (function(elements, modal, scrollbar, {
 
     // Detect request for extension menu.
     if (altKey && state.cnxml[target.dataset.type] && state.cnxml[target.dataset.type].extend) openExtensionPanel(state.cnxml[target.dataset.type]);
-    else extensions.classList.remove('open');
 
     // Detect request for imege alt text modal.
     if (altKey && target.matches('div[data-type=media]')) modal.show(target);
@@ -234,9 +242,25 @@ const flux3 = (function(elements, modal, scrollbar, {
       const range = selection.getRangeAt(0);
       const selectedText = range.toString();
       if (selectedText.length === 0) {
+        recordAction();
         range.insertNode(elFromString(target.querySelector('script').textContent));
         reRenderMath();
       }
+    }
+  };
+
+  const blockContrlKeys = ({ctrlKey, key}) => {
+
+    // Override default Ctrl + z behaviour.
+    if (ctrlKey && key === 'z') {
+      event.preventDefault();
+      restoreAction();
+    }
+
+    // Save content draft. 'Ctrl + s'.
+    if (ctrlKey && key === 's') {
+      event.preventDefault();
+      backupContent()
     }
   };
 
@@ -247,12 +271,6 @@ const flux3 = (function(elements, modal, scrollbar, {
 
     // Close extension panel. 'Esc'.
     if (key === 'Escape') extensions.classList.remove('open');
-
-    // Undo create element action. 'Ctrl + Shift + z'.
-    if (keyCode === 90 && ctrlKey && shiftKey) restoreAction();
-
-    // Save content draft. 'Alt + s'.
-    if (altKey && key === 's') backupContent();
 
     // Restore content draft. 'Alt + s'.
     if (altKey && key === 'r') restoreContent();
@@ -275,17 +293,20 @@ const flux3 = (function(elements, modal, scrollbar, {
     out.classList.toggle('show');
   };
 
-
+  // Greb fidrt content state.
+  recordAction();
 
   // ---- Event listeners --------
 
   flux3.addEventListener('click', toggleIntro);
   close.addEventListener('click', toggleIntro);
+  content.addEventListener("keyup", saveHistory);
   toolbar.addEventListener('click', detectAction);
   closeOut.addEventListener('click', closeOutput);
   content.addEventListener("paste", pasteController);
   content.addEventListener('click', detectAltActions);
   document.addEventListener('keyup', keyboardActions);
+  document.addEventListener('keydown', blockContrlKeys);
   equationsPanel.addEventListener('click', addEquation);
 
 }(cnxmlElements, Modal, Ps, utils));
