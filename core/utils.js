@@ -51,7 +51,7 @@ const utils = (function(travrs, toCnxml) {
     }, init);
 
   const uid = () =>
-    'ked-' + ((+new Date) + Math.random()* 100).toString(32);
+    'ked-' + ((+new Date) + Math.random()* 100).toString(32).replace('.', '_');
 
   const elFromString = (source) =>
     document.createRange().createContextualFragment(source);
@@ -113,10 +113,22 @@ const utils = (function(travrs, toCnxml) {
       if (!equation.parentNode.matches('span.flux-math')) {
         const wrapper = wrapElement([equation.previousSibling, equation, equation.nextSibling], 'span');
         wrapper.className = 'flux-math';
+        wrapper.dataset.type = 'math';
         wrapper.dataset.mathId = math.inputID;
         wrapper.setAttribute('contenteditable', false);
       }
     });
+  };
+
+  // Update Jax with given @id with new @latex formula.
+  const updateMath = (id, latex) => {
+    let found;
+    const nodeBuffer = document.createElement('span');
+    nodeBuffer.innerHTML = `$ ${latex} $`;
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, nodeBuffer]);
+    const MJNodes = MathJax.Hub.getAllJax(nodeBuffer);
+    if (MJNodes.length > 0 && MathJax.Hub.getAllJax('#content').some(math => (math.inputID === id && (found = math))))
+      found.Text(MJNodes[0].root.toMathML());
   };
 
   // Copy arributes 'from' one element 'to' another.
@@ -139,6 +151,7 @@ const utils = (function(travrs, toCnxml) {
     wrapMath,
     formatXml,
     copyAttrs,
+    updateMath,
     wrapElement,
     elFromString,
     createElement,

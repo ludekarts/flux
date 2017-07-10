@@ -184,6 +184,12 @@ div[data-tools-ext].open {
   border: none;
   display: block;
 }
+
+#out > #closeOut {
+  top: auto;
+  bottom: 20px;
+}
+
 /* SEPARATOR */
 
 i.separator {
@@ -245,6 +251,7 @@ div[data-modal].show {
 
 div[data-modal] > .content {
   margin: 10px;
+  position: relative;
 }
 
 div[data-modal] > .content input[type=text] {
@@ -259,13 +266,25 @@ div[data-modal] > .content textarea {
   border: none;
   padding: 10px;
   display: block;
-  margin: 10px 0;
+  margin-top: 10px;
+}
+
+div[data-modal] .content #cpymml {
+  position: absolute;
+  z-index: -10;
+  opacity: 0;
+  top: 0;
 }
 
 div[data-modal] .buttons {
   width: 40%;
+  margin-top: 10px;
   text-align: right;
   display: inline-block;
+}
+
+div[data-modal] .buttons .cmml {
+  float: left;
 }
 
 div[data-modal] .buttons.media {

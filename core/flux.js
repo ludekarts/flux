@@ -16,7 +16,10 @@ const flux3 = (function(elements, modal, scrollbar, {
   // MathJax Config.
   window.MathJax = {
     showProcessingMessages: false,
-    messageStyle: "none"
+    messageStyle: "none",
+    tex2jax: {
+      inlineMath: [["$", "$"]]
+    }
   };
 
   // UI References.
@@ -190,7 +193,7 @@ const flux3 = (function(elements, modal, scrollbar, {
 
 
   // Handle alternative content actions. Alt + Click.
-  const detectAltActions = ({target, altKey, ctrlKey}) => {
+  const detectAltActions = ({target, altKey, ctrlKey, shiftKey}) => {
 
     // Detect request for extension menu.
     if (altKey && state.cnxml[target.dataset.type] && state.cnxml[target.dataset.type].extend) openExtensionPanel(state.cnxml[target.dataset.type]);
@@ -202,8 +205,11 @@ const flux3 = (function(elements, modal, scrollbar, {
     // Detect request for reference modal.
     if (altKey && target.matches('reference')) modal.show(target);
 
+    // Detect request for math modal.
+    if (altKey && target.matches('span[data-type=math]')) modal.show(target);
+
     // Detect request for element ID.
-    if (ctrlKey) {
+    if (shiftKey) {
       clipInput.value = target.id;
       clipInput.select();
       document.execCommand('copy');
@@ -211,7 +217,7 @@ const flux3 = (function(elements, modal, scrollbar, {
     }
   };
 
-  // Add selected equation in place of cursor.
+  // Add selected equation after the cursor.
   const addEquation = ({target, altKey}) => {
     if (!target.matches('button')) return;
 

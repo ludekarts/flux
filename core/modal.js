@@ -8,6 +8,15 @@ const mediaScaffold = `
     button[data-action="cancel"] > "Cancel"`;
 
 
+const mathScaffold = `
+  div.content >
+    input#meq.input[type="text" placeholder="LaTeX Formula"]
+    input#cpymml.input[type="text"]
+  div.buttons.media >
+    button.cmml[data-action="copy"] > "Copy MML"
+    button[data-action="save"] > "Save"
+    button[data-action="cancel"] > "Cancel"`;
+
 const refsScaffold = `
   div.content >
     input.input[type="text" name="target" placeholder="Target"]
@@ -27,7 +36,7 @@ const refsScaffold = `
     button[data-action="cancel"] > "Cancel"`;
 
 
-const Modal = (function({template}) {
+const Modal = (function({template, updateMath}) {
 
   let currentTarget;
 
@@ -35,6 +44,7 @@ const Modal = (function({template}) {
   const content = modal.querySelector('.content');
 
   const templates = {
+    math: template(mathScaffold),
     media: template(mediaScaffold),
     reference: template(refsScaffold)
   };
@@ -56,6 +66,8 @@ const Modal = (function({template}) {
 
   const hide = () => (modal.classList.remove('show'), clean());
 
+  const dismissModal = ({key}) => (key === 'Escape' && hide());
+
   const saveMedia = () => {
     const name = modal.querySelector('input').value;
     currentTarget.closest('div[data-type=figure]').id = name;
@@ -70,16 +82,30 @@ const Modal = (function({template}) {
     currentTarget.setAttribute(type, modal.querySelector('input[name=target]').value || '');
   };
 
+  const saveMath = () => {
+    updateMath(currentTarget.dataset.mathId, modal.querySelector('#meq').value);
+  };
+
   const detectAction = ({target}) => {
     if (target.dataset.action === 'cancel') hide();
 
-    if (target.dataset.action === 'save') {
+    else if (target.dataset.action === 'save') {
       if (modal.dataset.modal === 'media') saveMedia();
+      else if (modal.dataset.modal === 'math') saveMath();
       else if (modal.dataset.modal === 'reference') saveReference();
       hide();
+    }
+
+    else if (target.dataset.action === 'copy') {
+      const cpymml = modal.querySelector('#cpymml');
+      cpymml.value = currentTarget.querySelector('script').textContent;
+      cpymml.select();
+      document.execCommand('copy');
     }
   };
 
   modal.addEventListener('click', detectAction);
+  document.addEventListener('keyup', dismissModal);
+
   return {show, hide};
-}(travrs, mediaScaffold, refsScaffold));
+}(utils, mediaScaffold, refsScaffold));
