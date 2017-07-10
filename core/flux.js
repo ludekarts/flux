@@ -123,7 +123,6 @@ const flux3 = (function(elements, modal, scrollbar, {
     }
   };
 
-
   // ---- Event handlers ---------
 
   const pasteController = (evnet) => {
@@ -149,9 +148,9 @@ const flux3 = (function(elements, modal, scrollbar, {
     recordAction();
   };
 
-  const saveHistory = debounce(({ctrlKey, key}) => {
-    if (!ctrlKey && key !== 'Escape') state.history.push(cleanMath(content.cloneNode(true)).innerHTML);
-  }, 300);
+  // Detect typing and debounce.
+  const saveHistory = debounce(({ctrlKey, key}) =>
+    (!ctrlKey && key !== 'Escape') && state.history.push(cleanMath(content.cloneNode(true)).innerHTML), 300);
 
 
   // Detect user actions.

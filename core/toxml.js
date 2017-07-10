@@ -60,8 +60,8 @@ const toCnxml = function(uid, copyAttrs, createElement) {
   const transformMath = (node) =>
     node.outerHTML = node.outerHTML.replace(/(<m|<\/m)/g, (match) => match === '<m' ? '<m:m' : '</m:m');
 
-  // Normalize newlines.
-  const transfomNewLines = (node) => node.outerHTML = '<newline>NL<\/newline>';
+  // Do not allow for line breake.
+  const removeNewLines = (node) => node.parentNode.removeChild(node);
 
   // Transform <i> & <b> tags from Chrome.
   const transformEmphasis = (node) => {
@@ -96,7 +96,7 @@ const toCnxml = function(uid, copyAttrs, createElement) {
       const sourceClone = cleanMath(htmlNode.cloneNode(true));
 
       // Transform new line.
-      Array.from(sourceClone.querySelectorAll('br')).forEach(transfomNewLines);
+      Array.from(sourceClone.querySelectorAll('br')).forEach(removeNewLines);
 
       // Create x-tag equivalents of CNXML. This will make easier
       // to translate CNXML elements that aren't compatible with HTML5
@@ -123,8 +123,6 @@ const toCnxml = function(uid, copyAttrs, createElement) {
       return serializer.serializeToString(cnxml)
         // Remove unecesery xml namesapces form CNXML elements -> Leftovers from parsing & editing.
         .replace(/xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, '')
-        // Remove conetnt from <newline>NL</newline> tag.
-        .replace(/<newline>NL<\/newline>/g, '<newline/>')
         // Remove all spaces between tags.
         .replace(/>\s*?</g, '><')
         // Remove all multiple spaces.
