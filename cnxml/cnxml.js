@@ -183,27 +183,23 @@ const cnxmlElements = (function({createElement}) {
 
 
   // Math wrapper
-  const math = {
-    tag: 'math',
-    title: 'Content with math',
-    icon: '<i class="material-icons">plus_one</i>',
-    template: (uid) =>
-      `<div data-type="math">MATH</div>`,
-    wrapp: (uid) =>
-      createElement(`div[data-type="math"]`)
-  };
+  // const math = {
+  //   tag: 'math',
+  //   title: 'Content with math',
+  //   icon: '<i class="material-icons">plus_one</i>',
+  //   template: (uid) =>
+  //     `<div data-type="math">MATH</div>`,
+  //   wrapp: (uid) =>
+  //     createElement(`div[data-type="math"]`)
+  // };
 
   // <equation>
   const equation = {
     tag: 'equation',
     title: 'Equation',
-    extend: [math],
     icon: '<i class="material-icons">functions</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="equation">
-        <div data-type="title">TITLE</div>
-        <div data-type="math">MATH</div>
-      </div>`,
+      `<div id="${uid()}" data-type="equation">MATH</div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="equation"]`)
   };

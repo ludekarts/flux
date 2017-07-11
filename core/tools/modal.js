@@ -1,7 +1,6 @@
 
 const Modal = (function() {
 
-
   const modal = document.querySelector('div[data-modal]');
   const content = modal.querySelector('.content');
 
@@ -42,7 +41,7 @@ const Modal = (function() {
 
   return {show, hide};
 }(
-  // mathEditor,
-  // imgEditor,
+  mathEditor,
+  imgEditor,
   refsEditor
 ));
