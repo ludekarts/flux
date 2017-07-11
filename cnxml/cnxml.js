@@ -6,7 +6,9 @@ const cnxmlElements = (function({createElement}) {
     title: 'Section',
     icon: '<i class="material-icons">view_stream</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="section">CONTENT</div>`,
+      `<div id="${uid()}" data-type="section">
+        <div id="${uid()}" data-type="para">SECTION</div>
+      </div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="section"]`)
   };
@@ -20,6 +22,28 @@ const cnxmlElements = (function({createElement}) {
       `<div data-type="title">TITLE</div>`,
     wrapp: (uid) =>
       createElement(`div[data-type="title"]`)
+  };
+
+  // <emphasis effect="bold">.
+  const bold = {
+    tag: 'bold',
+    title: 'Bold',
+    icon: '<i class="material-icons">format_bold</i>',
+    template: (uid) =>
+      `<emphasis effect="bold">BOLD</emphasis>`,
+    wrapp: (uid) =>
+      createElement(`emphasis[effect="bold"]`)
+  };
+
+  // <emphasis effect="italics">.
+  const italic = {
+    tag: 'italic',
+    title: 'Italic',
+    icon: '<i class="material-icons">format_italic</i>',
+    template: (uid) =>
+      `<emphasis effect="italics">ITALIC</emphasis>`,
+    wrapp: (uid) =>
+      createElement(`emphasis[effect="italics"]`)
   };
 
   // <para>.
@@ -181,18 +205,6 @@ const cnxmlElements = (function({createElement}) {
       createElement(`div[id="${uid()}" data-type="list"]`)
   };
 
-
-  // Math wrapper
-  // const math = {
-  //   tag: 'math',
-  //   title: 'Content with math',
-  //   icon: '<i class="material-icons">plus_one</i>',
-  //   template: (uid) =>
-  //     `<div data-type="math">MATH</div>`,
-  //   wrapp: (uid) =>
-  //     createElement(`div[data-type="math"]`)
-  // };
-
   // <equation>
   const equation = {
     tag: 'equation',
@@ -210,7 +222,9 @@ const cnxmlElements = (function({createElement}) {
     title: 'Example',
     icon: '<i class="material-icons">playlist_add_check</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="example">EXAMPLE</div>`,
+      `<div id="${uid()}" data-type="example">
+        <div id="${uid()}" data-type="para">EXAMPLE</div>
+      </div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="example"]`)
   };
@@ -244,5 +258,5 @@ const cnxmlElements = (function({createElement}) {
 
 
   // Export elements.
-  return [section, title, para, note, list, exercise, reference, figure, equation, term, example, definition];
+  return [section, para, note, list, exercise, reference, figure, equation, title, bold, italic, term, example, definition];
 }(utils));

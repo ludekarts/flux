@@ -25,3 +25,11 @@ div[data-type=media]:before {
   display: block;
   position: absolute;
 }
+
+emphasis[effect=bold] {
+  font-weight: bold;
+}
+
+emphasis[effect=italics] {
+  font-style: italic;
+}

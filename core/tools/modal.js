@@ -11,6 +11,10 @@ const Modal = (function() {
   };
 
   const show = (target) => {
+
+    // Reset editor.
+    state.currentEditor = undefined;
+    
     // Select editor.
     Object.keys(state.editors)
       .some(selector => target.matches(selector) ? !!(state.currentEditor = state.editors[selector]) : false);
@@ -34,7 +38,6 @@ const Modal = (function() {
 
     if (action === 'cancel') hide();
     else if (state.currentEditor[action]) state.currentEditor[action]().then(hide);
-
   };
 
   modal.addEventListener('click', detectAction);
