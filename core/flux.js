@@ -72,8 +72,8 @@ const flux3 = (function(elements, modal, scrollbar, {
     confirm.addEventListener("animationend", removeClass);
   };
 
-  const addEquations = (source) => {
-    source.forEach(math => {
+  const importEquations = (source) => {
+    source.reverse().forEach(math => {
       const content = (typeof math === 'string' ? math : math.outerHTML);
       const hash = base64(content);
       if (!~state.equations.indexOf(hash)) {
@@ -100,11 +100,16 @@ const flux3 = (function(elements, modal, scrollbar, {
 
   const backupContent = () => {
     try {
-      const math = Array.from(equationsPanel.querySelectorAll('script')).reverse().map(eq => eq.textContent);
+      const math = Array
+        .from(equationsPanel.querySelectorAll('script'))
+        .reverse()
+        .map(eq => eq.textContent);
+
       localStorage.setItem('flux3-ct-backup', JSON.stringify({
         math: math,
         content: cleanMath(content.cloneNode(true)).innerHTML
       }));
+
     } catch (error) {
       console.error(error);
       alert('Cannot save Backup Copy. See console for more details');
@@ -119,7 +124,7 @@ const flux3 = (function(elements, modal, scrollbar, {
       content.innerHTML = backup.content;
       if (backup.math) {
         state.equations = [];
-        addEquations(backup.math);
+        importEquations(backup.math.reverse());
       }
     }
   };
@@ -146,7 +151,7 @@ const flux3 = (function(elements, modal, scrollbar, {
 
     // Search for equations and add it to the equationsPanel.
     if (~clipContent.indexOf('<math>')) {
-      addEquations(Array.from(createElement('div', clipContent).querySelectorAll('math')));
+      importEquations(Array.from(createElement('div', clipContent).querySelectorAll('math')));
     }
   };
 
@@ -211,14 +216,8 @@ const flux3 = (function(elements, modal, scrollbar, {
     // Detect request for extension menu.
     if (altKey && state.cnxml[target.dataset.type] && state.cnxml[target.dataset.type].extend) openExtensionPanel(state.cnxml[target.dataset.type]);
 
-    // Detect request for imege alt text modal.
-    if (altKey && target.matches('div[data-type=media]')) modal.show(target);
-
-    // Detect request for reference modal.
-    if (altKey && target.matches('reference')) modal.show(target);
-
-    // Detect request for math modal.
-    if (altKey && target.matches('span[data-type=math]')) modal.show(target);
+    // Detect request for additional editor.
+    if (altKey) modal.show(target);
 
     // Detect request for element ID.
     if (shiftKey) {

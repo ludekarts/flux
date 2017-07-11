@@ -36,12 +36,17 @@ const refsEditor = (function({createElement, template}) {
     refs.content.value = targetElement.innerHTML;
   };
 
-  const save = () => {
+  const clearArrts = (node) =>
+    Array.from(node.attributes).forEach(attr => node.removeAttribute(attr.name));
+
+  const save = () => new Promise((resolve) => {
     const type = Array.from(element.querySelectorAll('input[type=radio]'))
       .filter(radio => radio.checked)[0].dataset.dest;
+    clearArrts(targetElement);
     targetElement.innerHTML = refs.content.value;
     targetElement.setAttribute(type, refs.target.value || '');
-  };
+    resolve();
+  });
 
   return {element, activate, save};
 }(utils));

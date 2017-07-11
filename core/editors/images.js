@@ -24,11 +24,12 @@ const imgEditor = (function({createElement, template}) {
     refs.name.value = src.slice(0, src.lastIndexOf('.'));
   };
 
-  const save = () => {
+  const save = () => new Promise((resolve) => {
     targetElement.closest('div[data-type=figure]').id = refs.name.value;
     targetElement.querySelector('img').setAttribute('src', (refs.name.value + '.jpg') || '');
     targetElement.setAttribute('alt', refs.alttext.value || '');
-  };
+    resolve();
+  });
 
   return {element, activate, save};
 }(utils));

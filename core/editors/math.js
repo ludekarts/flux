@@ -19,18 +19,20 @@ const mathEditor = (function({createElement, template, updateMath}) {
   const element = template(refs, scaffold);
 
   const activate = (source) => {
-    targetElement = source;    
+    targetElement = source;
   };
 
-  const save = () => {
+  const save = () => new Promise((resolve) => {
     updateMath(targetElement.dataset.mathId, refs.latex.value);
-  };
+    resolve();
+  });
 
-  const copy = () => {
+  const copy = () => new Promise((resolve) => {
     refs.cpymml.value = targetElement.querySelector('script').textContent;
     refs.cpymml.select();
     document.execCommand('copy');
-  };
+    resolve();
+  });
 
   return {element, activate, save, copy};
 }(utils));

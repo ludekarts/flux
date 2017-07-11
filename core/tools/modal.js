@@ -5,23 +5,23 @@ const Modal = (function() {
   const content = modal.querySelector('.content');
 
   const state = {
-    editors: {
-      math: mathEditor,
-      media: imgEditor,
-      reference: refsEditor
-    },
+    editors: {},
+    currentEditor: undefined,
     currentTarget: undefined,
   };
 
   const show = (target) => {
-    const name = target.dataset.type || target.tagName.toLowerCase();
-    const editor = state.editors[name];
-    modal.classList.add('show');
-    modal.dataset.modal = name;
+    // Select editor.
+    Object.keys(state.editors)
+      .some(selector => target.matches(selector) ? !!(state.currentEditor = state.editors[selector]) : false);
+
     // Append UI.
-    if (modal.firstElementChild) modal.removeChild(modal.firstElementChild);
-    modal.appendChild(editor.element);
-    editor.activate(target);
+    if (state.currentEditor) {
+      modal.classList.add('show');
+      if (modal.firstElementChild) modal.removeChild(modal.firstElementChild);
+      modal.appendChild(state.currentEditor.element);
+      state.currentEditor.activate(target);
+    }
   };
 
   const hide = () => modal.classList.remove('show');
@@ -29,19 +29,23 @@ const Modal = (function() {
   const dismissModal = ({key}) => (key === 'Escape' && hide());
 
   const detectAction = ({target}) => {
-    const editor = state.editors[modal.dataset.modal];
+    const action = target.dataset.action;
+    if (!action) return;
 
-    if (target.dataset.action === 'cancel') hide();
-    else if (target.dataset.action === 'save' && editor) (editor.save(), hide());
-    else if (target.dataset.action === 'copy') editor.copy();
+    if (action === 'cancel') hide();
+    else if (state.currentEditor[action]) state.currentEditor[action]().then(hide);
+
   };
 
   modal.addEventListener('click', detectAction);
   document.addEventListener('keyup', dismissModal);
 
-  return {show, hide};
-}(
-  mathEditor,
-  imgEditor,
-  refsEditor
-));
+  const register = (selector, editor) =>
+    state.editors[selector] = editor;
+
+  return { show, hide, register};
+}());
+
+Modal.register('reference', refsEditor);
+Modal.register('div[data-type=media]', imgEditor);
+Modal.register('span[data-type=math]', mathEditor);
