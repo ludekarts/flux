@@ -71,25 +71,46 @@ const utils = (function(travrs, toCnxml) {
     parent.removeChild(current);
   };
 
-  const unwrapElement = (element) => {
-    if (!element) {
-      const selection = window.getSelection();
-      const anchor = selection.anchorNode;
-      if (anchor && !anchor.parentNode.matches('#content')) {
-        if (anchor.nodeType === 3)
-          getNodesOut(anchor.parentNode);
-        else
-          anchor.parentNode.removeChild(anchor);
-      }
-    }
-    else getNodesOut(element);
+  // Unwrap elements that have carret on it
+  const unwrapElement = (stopAt) => {
+    const selection = window.getSelection();
+    const anchor = selection.anchorNode;
+    if (anchor && !anchor.parentNode.matches(stopAt)) getNodesOut(anchor.parentNode);
   };
 
+  // Insert 'node' as a sibling of 'target' node if target is an ElementChild.
+  // If target is a test node add sibling to its parent.
   const insertSiblingNode = (target, node) => {
     const current = target.nodeType === 3 ? target.parentNode : target;
     const parent = current.parentNode;
     parent.lastElementChild === current ? parent.appendChild(node) : parent.insertBefore(node, current.nextSibling);
-  }
+  };
+
+  // Move element which has active selection on level up in DOM tree.
+  const moveElement = (stopAt, moveUp = true) => {
+    const selection = window.getSelection();
+    if (!selection.anchorNode) return;
+
+    const current = selection.anchorNode.nodeType === 3
+      ? selection.anchorNode.parentNode
+      : selection.anchorNode;
+
+    const parent = current.parentNode;
+    if (parent.parentNode && !parent.matches(stopAt)) {
+      moveUp
+        ? parent.parentNode.insertBefore(current, parent)
+        : parent.nextElementSibling
+          ? parent.parentNode.insertBefore(current, parent.nextElementSibling)
+          : parent.parentNode.appendChild(current)
+
+      // Put carret at the begining.
+      const range = document.createRange();
+      range.setStart(current.firstChild, 0);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  };
 
   // Wrap 'elements' with HTMLElement of given 'type' with provided 'attrs'.
   // EXAMPLE: wrapElement(node, 'del', { "data-skip-merge" : true });
@@ -157,6 +178,20 @@ const utils = (function(travrs, toCnxml) {
   	};
   };
 
+  // Call callback function on firt call & wait for given amount of time, to callit again.
+  const pause = (callback, wait) => {
+    let timeout, block = false;
+    return (...args) => {
+      if (!block) {
+        clearTimeout(timeout);
+        callback.apply(this, args);
+        block = true;
+        timeout = setTimeout(() => block = false, wait);
+      }
+    };
+  };
+
+
   // Create a looping stack.
   const loopstack = (length, counter = 0) => {
     const stack = new Array(length);
@@ -166,7 +201,7 @@ const utils = (function(travrs, toCnxml) {
         if (!item) return;
         stack[counter] = item;
         counter = (counter === length - 1) ? 0 : (counter += 1);
-        // console.log(stack);
+        // console.log(stack); // Debug.
       },
       pull (def) {
         counter = (counter === 0) ? length - 1 : (counter -= 1);
@@ -182,6 +217,7 @@ const utils = (function(travrs, toCnxml) {
 
   return {
     uid,
+    pause,
     base64,
     template,
     debounce,
@@ -191,6 +227,7 @@ const utils = (function(travrs, toCnxml) {
     copyAttrs,
     updateMath,
     wrapElement,
+    moveElement,
     elFromString,
     createElement,
     addToolButton,
