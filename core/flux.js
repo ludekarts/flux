@@ -173,23 +173,31 @@ const flux3 = (function(elements, modal, scrollbar, key, {
     }
   }, 1500);
 
+  // Hide all UI panels.
   const hidePanels = () => {
     extensions.classList.remove('open');
     equationsPanel.classList.remove('show');
     return false;
   }
 
+  // Show/Hide equationsPanel.
   const toggleEqPanel = () => {
     equationsPanel.classList.toggle('show');
     return false;
   };
 
+  // Show CNXML output.
   const showCnxm = () => {
     out.classList.add('show');
     out.firstElementChild.value = formatXml(toCnxml(content));
     return false;
   };
 
+  // Add '...' aat the end of the element
+  const extendElement = ({target}) => {
+    if (!target.lastChild.data) target.appendChild(document.createTextNode('...'));    
+    else if (target.lastChild.data.trim().length === 0) target.lastChild.data = '...';
+  };
 
   // Detect user actions.
   const detectAction = ({target, altKey, ctrlKey}) => {
@@ -240,7 +248,10 @@ const flux3 = (function(elements, modal, scrollbar, key, {
   };
 
   // Handle alternative content actions. Alt + Click.
-  const detectAltActions = ({target, altKey, shiftKey}) => {
+  const detectAltActions = (event) => {
+
+    // Get modifiers.
+    const {target, altKey, shiftKey, ctrlKey} = event;
 
     // Element type.
     const type = target.dataset.type;
@@ -253,6 +264,7 @@ const flux3 = (function(elements, modal, scrollbar, key, {
 
     // Detect request for element ID.
     if (shiftKey) clip(target.id);
+
   };
 
   // Add selected equation after the cursor.
@@ -309,6 +321,7 @@ const flux3 = (function(elements, modal, scrollbar, key, {
   content.addEventListener("keydown", saveHistory);
   content.addEventListener("paste", pasteController);
   content.addEventListener('click', detectAltActions);
+  content.addEventListener('dblclick', extendElement);
   equationsPanel.addEventListener('click', addEquation);
 
 }(cnxmlElements, Modal, Ps, key, utils));

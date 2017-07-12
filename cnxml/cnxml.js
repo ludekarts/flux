@@ -7,7 +7,7 @@ const cnxmlElements = (function({createElement}) {
     icon: '<i class="material-icons">view_stream</i>',
     template: (uid) =>
       `<div id="${uid()}" data-type="section">
-        <div id="${uid()}" data-type="para">SECTION</div>
+        <div data-type="title">TITLE</div>
       </div>`,
     wrapp: (uid) =>
       createElement(`div[id="${uid()}" data-type="section"]`)
