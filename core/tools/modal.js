@@ -12,9 +12,12 @@ const Modal = (function() {
 
   const show = (target) => {
 
+    // Clean inputs.
+    Array.from(modal.querySelectorAll('.input')).forEach(input => input.value = '');
+
     // Reset editor.
     state.currentEditor = undefined;
-    
+
     // Select editor.
     Object.keys(state.editors)
       .some(selector => target.matches(selector) ? !!(state.currentEditor = state.editors[selector]) : false);
@@ -49,6 +52,7 @@ const Modal = (function() {
   return { show, hide, register};
 }());
 
+Modal.register('table', tableEditor);
 Modal.register('reference', refsEditor);
 Modal.register('div[data-type=media]', imgEditor);
 Modal.register('span[data-type=math]', mathEditor);

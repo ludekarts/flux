@@ -73,12 +73,12 @@ const flux3 = (function(elements, modal, scrollbar, {
   };
 
   const importEquations = (source) => {
-    source.reverse().forEach(math => {
+    source.reverse().forEach((math, index) => {
       const content = (typeof math === 'string' ? math : math.outerHTML);
       const hash = base64(content);
       if (!~state.equations.indexOf(hash)) {
         state.equations.push(hash);
-        equationsPanel.firstElementChild.insertBefore(createElement('button[data-action="addEq"]', content), equationsPanel.firstElementChild.firstChild);
+        equationsPanel.firstElementChild.insertBefore(createElement(`button${index === 0 ? '.last' : ''}[data-action="addEq"]`, content), equationsPanel.firstElementChild.firstChild);
       }
     });
     reRenderMath();
@@ -193,7 +193,9 @@ const flux3 = (function(elements, modal, scrollbar, {
 
       // Wrapp element / Add template.
       (selectedText.length > 0)
-        ? range.surroundContents(tool.wrapp(uid))
+        ? tool.wrapp 
+          ? range.surroundContents(tool.wrapp(uid))
+          : false
         : altKey
           ? ctrlKey
             ? content.appendChild(elFromString(tool.template(uid)))

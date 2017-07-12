@@ -256,7 +256,30 @@ const cnxmlElements = (function({createElement}) {
       createElement(`div[id="${uid()}" data-type="definition"]`)
   };
 
+  // <table>
+  const table = {
+    tag: 'table',
+    title: 'Table',
+    icon: '<i class="material-icons">view_module</i>',
+    template: (uid) =>
+      `<table id="${uid()}" cols="2" summary="" data-type="table">
+        <thead>
+          <tr>
+            <td>HEADER</td> <td>HEADER</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ENTRY</td> <td>ENTRY</td>
+          </tr>
+          <tr>
+            <td>ENTRY</td> <td>ENTRY</td>
+          </tr>
+        </tbody>
+      </table><br/>`
+  };
+
 
   // Export elements.
-  return [section, para, note, list, exercise, reference, figure, equation, title, bold, italic, term, example, definition];
+  return [section, para, note, equation, list, exercise, reference, figure, example, definition, title, bold, italic, term, table];
 }(utils));

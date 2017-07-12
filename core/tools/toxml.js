@@ -1,4 +1,4 @@
-const toCnxml = function(uid, copyAttrs, createElement) {
+const toCnxml = function(uid, copyAttrs, createElement, moveNodes) {
 
   // ---- Helpers ----------------
 
@@ -15,16 +15,10 @@ const toCnxml = function(uid, copyAttrs, createElement) {
 
   // Create new 'x-tag' element from the Editable element.
   const cloneXElement = (clone, node) => {
-    // let newChild;
 
     // Copy text node.
     if (node.nodeType === 3)
       return clone.appendChild(document.createTextNode(node.textContent));
-
-    // if (!node.dataset || !node.dataset.type || node.dataset.type === 'math')
-    //   newChild = node.cloneNode(true)
-    // else if (node.dataset && node.dataset.type)
-    //   newChild = createElement('x-' + node.dataset.type)
 
     const newChild = node.nodeType !== 3
       ? node.dataset && node.dataset.type ? createElement('x-' + node.dataset.type) : node.cloneNode(true)
@@ -80,8 +74,24 @@ const toCnxml = function(uid, copyAttrs, createElement) {
     }
   };
 
-  // Remove maths wrappers. <div data-type="math"></div>
-  // const removeMathWraps = (node) => node.outerHTML = node.innerHTML;
+  // Trabsform HTML table into CNXML table.
+  const transformTables = (table) => {
+
+    const cols = table.getAttribute('cols');
+    const title = table.getAttribute('title');
+
+    table.appendChild(moveNodes(table, createElement(`tgroup[cols="${cols}"]`)));
+    table.removeAttribute('cols');
+
+    if (title) {
+      table.insertBefore(createElement('title', title), table.firstChild);
+      table.removeAttribute('title');
+    }
+
+    table.outerHTML = table.outerHTML
+      .replace(/tr>/g, 'row>')
+      .replace(/td>/g, 'entry>');
+  };
 
   return {
     cleanMath,
@@ -113,9 +123,9 @@ const toCnxml = function(uid, copyAttrs, createElement) {
       const cnxml = parser.parseFromString(xml, "application/xml");
 
       // Transform back some of the xml tags to be compatible with CNXML standard.
-      // Array.from(cnxml.querySelectorAll('div[data-type=math]')).forEach(removeMathWraps);
       Array.from(cnxml.querySelectorAll('reference')).forEach(transformRefs);
       Array.from(cnxml.querySelectorAll('b, i')).forEach(transformEmphasis);
+      Array.from(cnxml.querySelectorAll('table')).forEach(transformTables);
       Array.from(cnxml.querySelectorAll('math')).forEach(transformMath);
 
       // Return final CNXML.

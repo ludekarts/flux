@@ -112,6 +112,12 @@ const utils = (function(travrs, toCnxml) {
     }
   };
 
+  // Move nodes 'from' node 'to' node.
+  const moveNodes = (from, to) => {
+    while(from.childNodes.length > 0) to.appendChild(from.firstChild);
+    return to;
+  };
+
   // Wrap 'elements' with HTMLElement of given 'type' with provided 'attrs'.
   // EXAMPLE: wrapElement(node, 'del', { "data-skip-merge" : true });
   const wrapElement = (elements, type, attrs) => {
@@ -213,7 +219,7 @@ const utils = (function(travrs, toCnxml) {
   };
 
   // To CNXML module.
-  const toCNXML = toCnxml(uid, copyAttrs, createElement);
+  const toCNXML = toCnxml(uid, copyAttrs, createElement, moveNodes);
 
   return {
     uid,
@@ -225,6 +231,7 @@ const utils = (function(travrs, toCnxml) {
     loopstack,
     formatXml,
     copyAttrs,
+    moveNodes,
     updateMath,
     wrapElement,
     moveElement,

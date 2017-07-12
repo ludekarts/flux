@@ -20,8 +20,10 @@ const imgEditor = (function({createElement, template}) {
 
   const activate = (source) => {
     targetElement = source;
-    const src = source.querySelector('img').getAttribute('src');
-    refs.name.value = src.slice(0, src.lastIndexOf('.'));
+    const src = targetElement.querySelector('img').getAttribute('src');
+    // Remove placeholder url.
+    refs.name.value = ~src.indexOf('empty') ? '' : src.slice(0, src.lastIndexOf('.'));
+    refs.alttext.value = targetElement.getAttribute('alt');
   };
 
   const save = () => new Promise((resolve) => {

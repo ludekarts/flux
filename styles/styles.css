@@ -209,7 +209,7 @@ i.separator {
 
 /* CONTAINETR */
 
-div[data-type] {
+div[data-type], table {
   color: #3d3d3d;
   position: relative;
   margin: 22px 8px 0px 8px;
@@ -218,14 +218,17 @@ div[data-type] {
   transition: border .3s ease;
 }
 
+table:hover,
 div[data-type]:hover {
   border-left: 1px solid #0390f4;
 }
 
+table:hover:after,
 div[data-type]:hover:after {
   background: #0390f4;
 }
 
+table:after,
 div[data-type]:after {
   top: -15px;
   left: -1px;
@@ -296,6 +299,23 @@ div[data-modal] .buttons .cmml {
   float: left;
 }
 
+div[data-modal] .table-ctrls {
+  padding-top: 10px;
+  display: flex;
+}
+
+div[data-modal] .table-ctrls > span {
+  flex: 1;
+}
+
+div[data-modal] .table-ctrls > span > label {
+  margin-right: 3px;
+}
+
+div[data-modal] .table-ctrls .vmiddle {
+  vertical-align: middle;
+}
+
 div[data-modal] .buttons.media {
   width: 100%;
   display: block;
@@ -363,6 +383,10 @@ aside > .buttons > button:before {
   position: absolute;
 }
 
+aside > .buttons > button.last {
+  border-bottom: 2px solid #ccc;
+}
+
 /* CONFIRM */
 
 .confirm {
@@ -408,4 +432,30 @@ aside > .buttons > button:before {
   z-index: -10;
   left: -9999px;
   position: absolute;
+}
+
+/* TABLES */
+
+table {
+  width: 100%;
+}
+
+thead {
+  width: 100%;
+  background: #ccc;
+  text-align: left;
+  font-weight: bold;
+}
+
+tbody {
+  width: 100%;
+  text-align: left;
+}
+
+tr:nth-child(even) {
+  background: #e1e1e1;
+}
+
+td, th {
+  padding: 5px;
 }
