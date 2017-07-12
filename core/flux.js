@@ -1,10 +1,10 @@
 // Flux 3
 // Wojciech Ludwin 2017, ludekarts@gmail.com
 
-const flux3 = (function(elements, modal, scrollbar, {
+const flux3 = (function(elements, modal, scrollbar, key, {
   uid, elemntsToCnxml, createElement, elFromString, addToolButton, unwrapElement,
   insertSiblingNode, wrapMath, toCnxml, cleanMath, formatXml, base64, pause, loopstack,
-  moveElement
+  moveElement, clipboard
 }) {
 
   // Global state.
@@ -23,6 +23,10 @@ const flux3 = (function(elements, modal, scrollbar, {
     }
   };
 
+
+  // Set keyboardActions scope to flux3 namesapce.
+  key.setScope('flux3');
+
   // UI References.
   const out = document.querySelector('#out');
   const flux3 = document.querySelector('#flux3');
@@ -36,6 +40,9 @@ const flux3 = (function(elements, modal, scrollbar, {
   const equationsPanel = document.querySelector('[data-mthlib]');
   const toolbox = document.querySelector('#toolbar > div[data-tools-main]');
   const extensions = document.querySelector('#toolbar > div[data-tools-ext]');
+
+  // Init Clipboard copy.
+  const clip = clipboard(document.body);
 
   // Add CNXML tools.
   elements.forEach(addToolButton(toolbox));
@@ -96,6 +103,7 @@ const flux3 = (function(elements, modal, scrollbar, {
     if (!ct) return;
     content.innerHTML = ct;
     reRenderMath();
+    return false;
   };
 
   const backupContent = () => {
@@ -115,6 +123,8 @@ const flux3 = (function(elements, modal, scrollbar, {
       alert('Cannot save Backup Copy. See console for more details');
     }
     confirmAnimation();
+
+    return false;
   };
 
   const restoreContent = () => {
@@ -127,6 +137,7 @@ const flux3 = (function(elements, modal, scrollbar, {
         importEquations(backup.math.reverse());
       }
     }
+    return false;
   };
 
   // ---- Event handlers ---------
@@ -158,9 +169,26 @@ const flux3 = (function(elements, modal, scrollbar, {
   // Detect typing and debounce.
   const saveHistory = pause(({ctrlKey, key}) => {
     if (!ctrlKey && key !== 'Escape') {
-      state.history.push(cleanMath(content.cloneNode(true)).innerHTML)
+      state.history.push(cleanMath(content.cloneNode(true)).innerHTML);
     }
   }, 1500);
+
+  const hidePanels = () => {
+    extensions.classList.remove('open');
+    equationsPanel.classList.remove('show');
+    return false;
+  }
+
+  const toggleEqPanel = () => {
+    equationsPanel.classList.toggle('show');
+    return false;
+  };
+
+  const showCnxm = () => {
+    out.classList.add('show');
+    out.firstElementChild.value = formatXml(toCnxml(content));
+    return false;
+  };
 
 
   // Detect user actions.
@@ -193,7 +221,7 @@ const flux3 = (function(elements, modal, scrollbar, {
 
       // Wrapp element / Add template.
       (selectedText.length > 0)
-        ? tool.wrapp 
+        ? tool.wrapp
           ? range.surroundContents(tool.wrapp(uid))
           : false
         : altKey
@@ -211,23 +239,20 @@ const flux3 = (function(elements, modal, scrollbar, {
     }
   };
 
-
   // Handle alternative content actions. Alt + Click.
-  const detectAltActions = ({target, altKey, ctrlKey, shiftKey}) => {
+  const detectAltActions = ({target, altKey, shiftKey}) => {
+
+    // Element type.
+    const type = target.dataset.type;
 
     // Detect request for extension menu.
-    if (altKey && state.cnxml[target.dataset.type] && state.cnxml[target.dataset.type].extend) openExtensionPanel(state.cnxml[target.dataset.type]);
+    if (altKey && state.cnxml[type] && state.cnxml[type].extend) openExtensionPanel(state.cnxml[type]);
 
     // Detect request for additional editor.
     if (altKey) modal.show(target);
 
     // Detect request for element ID.
-    if (shiftKey) {
-      clipInput.value = target.id;
-      clipInput.select();
-      document.execCommand('copy');
-      console.log('Copy ID: ' + target.id);
-    }
+    if (shiftKey) clip(target.id);
   };
 
   // Add selected equation after the cursor.
@@ -255,64 +280,25 @@ const flux3 = (function(elements, modal, scrollbar, {
     }
   };
 
-  const blockCtrlCommands = ({ctrlKey, key, keyCode}) => {
 
-    // Override default Ctrl + z behaviour.
-    if (ctrlKey && key === 'z') {
-      event.preventDefault();
-      restoreState();
-    }
+  const toggleIntro = (event) => intro.classList.toggle('show');
+  const closeOutput = (event) => out.classList.toggle('show');
 
-    // Save content draft. 'Ctrl + s'.
-    if (ctrlKey && key === 's') {
-      event.preventDefault();
-      backupContent();
-    }
 
-    // Toggle eqquations panel. 'Ctrl + Up Arrow'.
-    if (ctrlKey && keyCode === 38) {
-      event.preventDefault();
-      moveElement('#content', true);
-    }
+  // ---- Keyboard shortcuts -----
 
-    // Toggle eqquations panel. 'Ctrl + Down Arrow'.
-    if (ctrlKey && keyCode === 40) {
-      event.preventDefault();
-      moveElement('#content', false);
-    }
-  };
+  // Panles.
+  key('esc, escape', 'flux3', hidePanels);
+  key('command+spave, ctrl+space', 'flux3', toggleEqPanel);
+  // Edit.
+  key('⌥+r, alt+x', 'flux3', showCnxm);
+  key('command+z, ctrl+z', 'flux3', restoreState);
+  key('command+s, ctrl+s', 'flux3', backupContent);
+  key('command+r, ctrl+r', 'flux3', restoreContent);
+  // Traverse.
+  key('command+up, ctrl+up', 'flux3', moveElement.bind(null, '#content', true));
+  key('command+down, ctrl+down', 'flux3', moveElement.bind(null, '#content', false));
 
-  const keyboardActions = (event) => {
-    event.preventDefault();
-
-    const {altKey, shiftKey, ctrlKey, key, keyCode, target} = event;
-
-    // Close extension & equations panels. 'Esc'.
-    if (key === 'Escape') {
-      extensions.classList.remove('open');
-      equationsPanel.classList.remove('show');
-    }
-
-    // Restore content draft. 'Alt + s'.
-    if (altKey && key === 'r') restoreContent();
-
-    // Toggle eqquations panel. 'Ctrl + Space'.
-    if (ctrlKey && key === ' ') return equationsPanel.classList.toggle('show');
-
-    // Display CNXML. 'Alt + x'.
-    if (altKey && key === 'x') {
-      out.classList.add('show');
-      out.firstElementChild.value = formatXml(toCnxml(content));
-    }
-  };
-
-  const toggleIntro = (event) => {
-    intro.classList.toggle('show');
-  };
-
-  const closeOutput = (event) => {
-    out.classList.toggle('show');
-  };
 
   // ---- Event listeners --------
 
@@ -323,8 +309,6 @@ const flux3 = (function(elements, modal, scrollbar, {
   content.addEventListener("keydown", saveHistory);
   content.addEventListener("paste", pasteController);
   content.addEventListener('click', detectAltActions);
-  document.addEventListener('keyup', keyboardActions);
-  document.addEventListener('keydown', blockCtrlCommands);
   equationsPanel.addEventListener('click', addEquation);
 
-}(cnxmlElements, Modal, Ps, utils));
+}(cnxmlElements, Modal, Ps, key, utils));

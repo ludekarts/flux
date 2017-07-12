@@ -425,15 +425,6 @@ aside > .buttons > button.last {
 }
 
 
-/* CLIPBOARD INPUT */
-
-#clipInput {
-  opacity: 0;
-  z-index: -10;
-  left: -9999px;
-  position: absolute;
-}
-
 /* TABLES */
 
 table {

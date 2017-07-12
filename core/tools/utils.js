@@ -89,7 +89,7 @@ const utils = (function(travrs, toCnxml) {
   // Move element which has active selection on level up in DOM tree.
   const moveElement = (stopAt, moveUp = true) => {
     const selection = window.getSelection();
-    if (!selection.anchorNode) return;
+    if (!selection.anchorNode) return false;
 
     const current = selection.anchorNode.nodeType === 3
       ? selection.anchorNode.parentNode
@@ -110,6 +110,8 @@ const utils = (function(travrs, toCnxml) {
       selection.removeAllRanges();
       selection.addRange(range);
     }
+
+    return false;
   };
 
   // Move nodes 'from' node 'to' node.
@@ -218,6 +220,24 @@ const utils = (function(travrs, toCnxml) {
     }
   };
 
+  const clipboard = (root) => {
+    const clipInput = root.querySelector('#clipInput') || document.createElement('input');
+    if (!clipInput.id) {
+      clipInput.id = '#clipInput';
+      clipInput.style.opacity = 0;
+      clipInput.style.zIndex = -10;
+      clipInput.style.left= '-9999px';
+      clipInput.style.position= 'fixed';
+      root.appendChild(clipInput);
+    }
+    return (value) => {
+      clipInput.value = value;
+      clipInput.select();
+      document.execCommand('copy');
+      console.log('Copied: ' + value);
+    }
+  };
+
   // To CNXML module.
   const toCNXML = toCnxml(uid, copyAttrs, createElement, moveNodes);
 
@@ -231,6 +251,7 @@ const utils = (function(travrs, toCnxml) {
     loopstack,
     formatXml,
     copyAttrs,
+    clipboard,
     moveNodes,
     updateMath,
     wrapElement,
