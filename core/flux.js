@@ -195,7 +195,7 @@ const flux3 = (function(elements, modal, scrollbar, key, {
 
   // Add '...' aat the end of the element
   const extendElement = ({target}) => {
-    if (!target.lastChild.data) target.appendChild(document.createTextNode('...'));    
+    if (!target.lastChild.data) target.appendChild(document.createTextNode('...'));
     else if (target.lastChild.data.trim().length === 0) target.lastChild.data = '...';
   };
 
@@ -301,15 +301,15 @@ const flux3 = (function(elements, modal, scrollbar, key, {
 
   // Panles.
   key('esc, escape', 'flux3', hidePanels);
-  key('command+spave, ctrl+space', 'flux3', toggleEqPanel);
+  key('⌘+space, ctrl+space', 'flux3', toggleEqPanel);
   // Edit.
-  key('⌥+r, alt+x', 'flux3', showCnxm);
-  key('command+z, ctrl+z', 'flux3', restoreState);
-  key('command+s, ctrl+s', 'flux3', backupContent);
-  key('command+r, ctrl+r', 'flux3', restoreContent);
+  key('⌥+q, alt+x', 'flux3', showCnxm);
+  key('⌘+z, ctrl+z', 'flux3', restoreState);
+  key('⌘+s, ctrl+s', 'flux3', backupContent);
+  key('⌘+r, ctrl+r', 'flux3', restoreContent);
   // Traverse.
-  key('command+up, ctrl+up', 'flux3', moveElement.bind(null, '#content', true));
-  key('command+down, ctrl+down', 'flux3', moveElement.bind(null, '#content', false));
+  key('⌘+up, ctrl+up', 'flux3', moveElement.bind(null, '#content', true));
+  key('⌘+down, ctrl+down', 'flux3', moveElement.bind(null, '#content', false));
 
 
   // ---- Event listeners --------
