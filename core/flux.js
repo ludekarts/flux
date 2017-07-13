@@ -150,7 +150,7 @@ const flux3 = (function(elements, modal, scrollbar, key, {
       // Remove empty labels.
       .replace(/<label\s*?\/>/g,'')
       //Replace links.
-      .replace(/<link(.+?)\/>/g, (match, attrs) => `<reference ${attrs}>Reference</reference>`)
+      .replace(/<link(.+?)\/>/g, (match, attrs) => `<reference ${attrs}>REFERENCE</reference>`)
       // Remove MathML namespace.
       .replace(/<(\/?)m:|\s*xmlns(:m)?\s*="[\s\S\w]+?"/g, (match, slash) => ~match.indexOf('<') ? ('<' + slash) : '');
 
@@ -175,6 +175,8 @@ const flux3 = (function(elements, modal, scrollbar, key, {
 
   // Hide all UI panels.
   const hidePanels = () => {
+    out.classList.remove('show');
+    intro.classList.remove('show');
     extensions.classList.remove('open');
     equationsPanel.classList.remove('show');
     return false;
@@ -193,10 +195,10 @@ const flux3 = (function(elements, modal, scrollbar, key, {
     return false;
   };
 
-  // Add '...' aat the end of the element
+  // Add '—' at the end of the element
   const extendElement = ({target}) => {
-    if (!target.lastChild.data) target.appendChild(document.createTextNode('...'));
-    else if (target.lastChild.data.trim().length === 0) target.lastChild.data = '...';
+    if (!target.lastChild.data) target.appendChild(document.createTextNode('—'));
+    else if (target.lastChild.data.trim().length === 0) target.lastChild.data = '—';
   };
 
   // Detect user actions.
@@ -291,7 +293,6 @@ const flux3 = (function(elements, modal, scrollbar, key, {
       }
     }
   };
-
 
   const toggleIntro = (event) => intro.classList.toggle('show');
   const closeOutput = (event) => out.classList.toggle('show');

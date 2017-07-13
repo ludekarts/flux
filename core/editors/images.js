@@ -27,7 +27,8 @@ const imgEditor = (function({createElement, template}) {
   };
 
   const save = () => new Promise((resolve) => {
-    targetElement.closest('div[data-type=figure]').id = refs.name.value;
+    const figure = targetElement.closest('div[data-type=figure]');
+    if (figure) figure.id = refs.name.value;
     targetElement.querySelector('img').setAttribute('src', (refs.name.value + '.jpg') || '');
     targetElement.setAttribute('alt', refs.alttext.value || '');
     resolve();

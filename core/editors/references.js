@@ -45,6 +45,7 @@ const refsEditor = (function({createElement, template}) {
     clearArrts(targetElement);
     targetElement.innerHTML = refs.content.value;
     targetElement.setAttribute(type, refs.target.value || '');
+    if (type === 'document') targetElement.className = 'target-chapter';
     resolve();
   });
 

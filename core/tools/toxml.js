@@ -90,7 +90,8 @@ const toCnxml = function(uid, copyAttrs, createElement, moveNodes) {
 
     table.outerHTML = table.outerHTML
       .replace(/tr>/g, 'row>')
-      .replace(/td>/g, 'entry>');
+      .replace(/td>/g, 'entry>')
+      .replace(/<td\/>/g, '<entry/>')
   };
 
   return {

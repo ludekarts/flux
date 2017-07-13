@@ -281,5 +281,5 @@ const cnxmlElements = (function({createElement}) {
 
 
   // Export elements.
-  return [section, para, note, equation, list, exercise, reference, figure, example, definition, title, bold, italic, term, table];
+  return [section, para, exercise, equation, list, note, reference, figure, example, definition, title, bold, italic, term, table];
 }(utils));
