@@ -133,6 +133,8 @@ const toCnxml = function(uid, copyAttrs, createElement, moveNodes) {
       return serializer.serializeToString(cnxml)
         // Remove unecesery xml namesapces form CNXML elements -> Leftovers from parsing & editing.
         .replace(/xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, '')
+        // Remove MathML namespace -> from MatJax math updates.
+        .replace(/\s*xmlns="http:\/\/www.w3.org\/1998\/Math\/MathML"/g, '')
         // Remove all spaces between tags.
         .replace(/>\s*?</g, '><')
         // Remove all multiple spaces.

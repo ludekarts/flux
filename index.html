@@ -49,35 +49,38 @@
 
           <h4>Add Elements</h4>
           <ul>
-            <li><code>Alt + LMB + Tool</code> - Add element as a sibling of focused element</li>
-            <li><code>Alt + Ctrl + LMB + Tool</code> - Add element as a last in the content</li>
+            <li><code>Ctrl + q</code> - Add empty Math element in caret position</li>
+            <li><code>Alt + LMB + Tool</code> - Add element as a next sibling of current element</li>
+            <li><code>Alt + Ctrl + LMB + Tool</code> - Add element at the end of the content</li>
           </ul>
 
           <h4>Traversing Tree</h4>
           <ul>
-            <li><code>Ctrl + ↑</code> - Move element with carret in it one level up in the tree <strong>before parent</strong></li>
-            <li><code>Ctrl + ↓</code> - Move element with carret in it one level up in the tree <strong>after parent</strong></li>
+            <li><code>Ctrl + ↑</code> - Move element with carret in it <strong>one level up</strong> in the tree <strong>before parent</strong></li>
+            <li><code>Ctrl + ↓</code> - Move element with carret in it <strong>one level up</strong> in the tree <strong>after parent</strong></li>
           </ul>
 
           <h4>Additional Tools</h4>
           <ul>
-            <li><code>Alt + LMB on Image</code> - Open image attributes modal</li>
-            <li><code>Alt + LMB on Equarion</code> - Open LaTeX input modal</li>
-            <li><code>Alt + LMB on Reference</code> - Open reference attributes modal</li>
-            <li><code>Alt + LMB om Content's element</code> - Open extension menu (if exist)</li>
-            <li><code>Alt + LMB on Equarion Button</code> - Remove equation from Equations Panel</li>
+            <li><code>Alt + LMB on Content's element</code> - Open extensions panel (works for: Images, Equations, References, Exercises, Tables)</li>
+            <li><code>F2 + LMB on Content's element</code> - Open additonal options panel (works for: Lists)</li>
+          </ul>
+
+          <h4>Equations Panel</h4>
+          <ul>
             <li><code>Ctrl + Space</code> - Toggle Equations Panel</li>
-            <li><code>Esc</code> - Dismiss all additional popups & bars</li>
+            <li><code>Alt + Shift + d</code> - Remove duplicates from Equations Panel</li>
+            <li><code>Alt + LMB on Equation Button</code> - Remove equation from Equations Panel</li>
           </ul>
 
           <h4>Save & View</h4>
           <ul>
-            <li><code>Alt + x</code> - Show CNXML source</li>
-            <li><code>⌥ + q</code> - Show CNXML source on Mac</li>
             <li><code>Ctrl + r</code> - Restore local copy</li>
             <li><code>Ctrl + s</code> - Save local copy</li>
             <li><code>Ctrl + z</code> - Undo last action (limited to 15 actions)</li>
-            <li><code>Shift + LMB on Content's element</code> - Copy element ID into the clipboard</li>
+            <li><code>Alt + x</code> - Show CNXML source / <code>⌥ + q</code> on MAC</li>
+            <li><code>Esc</code> - Dismiss all additional popups & bars</li>
+            <li><code>Shift + LMB on Content's element</code> - Copy element's ID into the clipboard</li>
           </ul>
         </div>
 
@@ -99,6 +102,7 @@
     <script src="core/tools/utils.js" charset="utf-8"></script>
     <!-- Editors -->
     <script src="core/editors/math.js" charset="utf-8"></script>
+    <script src="core/editors/list.js" charset="utf-8"></script>
     <script src="core/editors/table.js" charset="utf-8"></script>
     <script src="core/editors/images.js" charset="utf-8"></script>
     <script src="core/editors/references.js" charset="utf-8"></script>

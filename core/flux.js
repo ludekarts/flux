@@ -9,7 +9,6 @@ const flux3 = (function(elements, modal, scrollbar, key, {
 
   // Global state.
   const state = {
-    equations: [],
     history: loopstack(15),
     cnxml: elemntsToCnxml(elements)
   };
@@ -62,6 +61,11 @@ const flux3 = (function(elements, modal, scrollbar, key, {
   const openExtensionPanel = (tool) => {
     extensions.innerHTML = '';
     tool.extend.forEach(addToolButton(extensions, true));
+    // Add options button.
+    if (tool.options) {
+      extensions.appendChild(createElement('i.separator'));
+      extensions.appendChild(createElement(`button[title="Options" data-action="opts" data-opts="${tool.options}"]` , '<i class="material-icons">settings</i>'));
+    }
     extensions.classList.add('open');
   };
 
@@ -82,11 +86,10 @@ const flux3 = (function(elements, modal, scrollbar, key, {
   const importEquations = (source) => {
     source.reverse().forEach((math, index) => {
       const content = (typeof math === 'string' ? math : math.outerHTML);
-      const hash = base64(content);
-      if (!~state.equations.indexOf(hash)) {
-        state.equations.push(hash);
-        equationsPanel.firstElementChild.insertBefore(createElement(`button${index === 0 ? '.last' : ''}[data-action="addEq"]`, content), equationsPanel.firstElementChild.firstChild);
-      }
+      equationsPanel.firstElementChild.insertBefore(
+        createElement(`button${index === 0 ? '.last' : ''}[data-action="addEq"]`, content),
+        equationsPanel.firstElementChild.firstChild
+      );
     });
     reRenderMath();
   };
@@ -133,7 +136,6 @@ const flux3 = (function(elements, modal, scrollbar, key, {
     else {
       content.innerHTML = backup.content;
       if (backup.math) {
-        state.equations = [];
         importEquations(backup.math.reverse());
       }
     }
@@ -142,13 +144,15 @@ const flux3 = (function(elements, modal, scrollbar, key, {
 
   // ---- Event handlers ---------
 
-  const pasteController = (evnet) => {
+  const clipController = (evnet) => {
     evnet.preventDefault();
 
     // Clean clipboard data.
     const clipContent = event.clipboardData.getData('text/plain')
       // Remove empty labels.
       .replace(/<label\s*?\/>/g,'')
+      // Remove newlines.
+      .replace(/<newline\/*>|<\/newline>/g,'')
       //Replace links.
       .replace(/<link(.+?)\/>/g, (match, attrs) => `<reference ${attrs}>REFERENCE</reference>`)
       // Remove MathML namespace.
@@ -195,14 +199,14 @@ const flux3 = (function(elements, modal, scrollbar, key, {
     return false;
   };
 
-  // Add '—' at the end of the element
+  // Add '___' at the end of the element.
   const extendElement = ({target}) => {
-    if (!target.lastChild.data) target.appendChild(document.createTextNode('—'));
-    else if (target.lastChild.data.trim().length === 0) target.lastChild.data = '—';
+    if (!target.lastChild.data) target.appendChild(document.createTextNode('___'));
+    else if (target.lastChild.data.trim().length === 0) target.lastChild.data = '___';
   };
 
-  // Detect user actions.
-  const detectAction = ({target, altKey, ctrlKey}) => {
+  // Detect tool that user select.
+  const detectSelectedTool = ({target, altKey, ctrlKey}) => {
 
     // Detect action.
     const action = target.dataset.action;
@@ -217,7 +221,7 @@ const flux3 = (function(elements, modal, scrollbar, key, {
     // Detect tool.
     const tool = state.cnxml[action];
     if (!tool || !target.dataset.ext) extensions.classList.remove('open');
-    if (tool.extend) openExtensionPanel(tool);
+    if (tool && tool.extend) openExtensionPanel(tool);
 
     // Add editable element.
     const selection = window.getSelection();
@@ -253,7 +257,7 @@ const flux3 = (function(elements, modal, scrollbar, key, {
   const detectAltActions = (event) => {
 
     // Get modifiers.
-    const {target, altKey, shiftKey, ctrlKey} = event;
+    const {target, altKey, shiftKey, ctrlKey, keyCode} = event;
 
     // Element type.
     const type = target.dataset.type;
@@ -261,26 +265,19 @@ const flux3 = (function(elements, modal, scrollbar, key, {
     // Detect request for extension menu.
     if (altKey && state.cnxml[type] && state.cnxml[type].extend) openExtensionPanel(state.cnxml[type]);
 
-    // Detect request for additional editor.
+    // Detect request for additional editor + stash current target for options panel.
     if (altKey) modal.show(target);
+
+    // Detect request for options panel.
+    if (key.isPressed("f2")) modal.secondary(target);
 
     // Detect request for element ID.
     if (shiftKey) clip(target.id);
 
   };
 
-  // Add selected equation after the cursor.
-  const addEquation = ({target, altKey}) => {
-    if (!target.matches('button')) return;
-
-    // Delete equation button. 'Alt + LMB + Button'.
-    if (altKey) {
-      const index = state.equations.indexOf(base64(target.querySelector('script').textContent));
-      if (index > -1) state.equations.splice(index, 1);
-      return target.parentNode.removeChild(target);
-    }
-
-    // Add Equarion.
+  // Add Math Equation in place where caret is.
+  const addMathAtCaret = (mml) => {
     const selection = window.getSelection();
     if (selection.anchorNode && isInContent(selection.anchorNode) ) {
       const range = selection.getRangeAt(0);
@@ -288,10 +285,37 @@ const flux3 = (function(elements, modal, scrollbar, key, {
       if (selectedText.length === 0) {
         // Add entry to edit history.
         recordState();
-        range.insertNode(elFromString(target.querySelector('script').textContent));
+        range.insertNode(elFromString(mml));
         reRenderMath();
       }
     }
+  };
+
+  // Add selected equation after the cursor.
+  const addEquation = ({target, altKey}) => {
+    if (!target.matches('button')) return;
+
+    // Delete equation button. 'Alt + LMB + Button'.
+    if (altKey) return target.parentNode.removeChild(target);
+
+    // Add Equation.
+    addMathAtCaret(target.querySelector('script').textContent);
+  };
+
+  const addEmptyMathNode = () => {
+    addMathAtCaret('<math><mtext>MATH</mtext></math>')
+  };
+
+  const removeDuplicates = () => {
+    const hashes = [];
+    const btnsContainer = equationsPanel.firstElementChild;
+    Array.from(btnsContainer.children)
+      .forEach(eq => {
+        eq.classList.remove('last');
+        const hash = base64(eq.querySelector('script').textContent);
+        if (!~hashes.indexOf(hash)) hashes.push(hash);
+        else btnsContainer.removeChild(eq);
+      });
   };
 
   const toggleIntro = (event) => intro.classList.toggle('show');
@@ -303,11 +327,14 @@ const flux3 = (function(elements, modal, scrollbar, key, {
   // Panles.
   key('esc, escape', 'flux3', hidePanels);
   key('⌘+space, ctrl+space', 'flux3', toggleEqPanel);
+  key('⌥+shift+d, alt+shift+d', 'flux3', removeDuplicates);
   // Edit.
   key('⌥+q, alt+x', 'flux3', showCnxm);
   key('⌘+z, ctrl+z', 'flux3', restoreState);
   key('⌘+s, ctrl+s', 'flux3', backupContent);
   key('⌘+r, ctrl+r', 'flux3', restoreContent);
+  key('⌘+q, ctrl+q', 'flux3', addEmptyMathNode);
+
   // Traverse.
   key('⌘+up, ctrl+up', 'flux3', moveElement.bind(null, '#content', true));
   key('⌘+down, ctrl+down', 'flux3', moveElement.bind(null, '#content', false));
@@ -317,10 +344,10 @@ const flux3 = (function(elements, modal, scrollbar, key, {
 
   flux3.addEventListener('click', toggleIntro);
   close.addEventListener('click', toggleIntro);
-  toolbar.addEventListener('click', detectAction);
+  toolbar.addEventListener('click', detectSelectedTool);
   closeOut.addEventListener('click', closeOutput);
   content.addEventListener("keydown", saveHistory);
-  content.addEventListener("paste", pasteController);
+  content.addEventListener("paste", clipController);
   content.addEventListener('click', detectAltActions);
   content.addEventListener('dblclick', extendElement);
   equationsPanel.addEventListener('click', addEquation);

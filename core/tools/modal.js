@@ -6,11 +6,12 @@ const Modal = (function() {
 
   const state = {
     editors: {},
+    secondaries: {},
     currentEditor: undefined,
     currentTarget: undefined,
   };
 
-  const show = (target) => {
+  const show = (target, runSecondary = false) => {
 
     // Clean inputs.
     Array.from(modal.querySelectorAll('.input')).forEach(input => input.value = '');
@@ -19,8 +20,14 @@ const Modal = (function() {
     state.currentEditor = undefined;
 
     // Select editor.
-    Object.keys(state.editors)
-      .some(selector => target.matches(selector) ? !!(state.currentEditor = state.editors[selector]) : false);
+    Object.keys(!runSecondary ? state.editors : state.secondaries)
+      .some(selector =>
+        target.matches(selector)
+          ? !!(state.currentEditor = !runSecondary
+            ? state.editors[selector]
+            : state.secondaries[selector])
+          : false
+      );
 
     // Append UI.
     if (state.currentEditor) {
@@ -30,6 +37,8 @@ const Modal = (function() {
       state.currentEditor.activate(target);
     }
   };
+
+  const secondary = (target) => show(target, true);
 
   const hide = () => modal.classList.remove('show');
 
@@ -46,13 +55,16 @@ const Modal = (function() {
   modal.addEventListener('click', detectAction);
   document.addEventListener('keyup', dismissModal);
 
-  const register = (selector, editor) =>
-    state.editors[selector] = editor;
+  const register = (selector, editor, isSecondary = false) =>
+    !isSecondary
+      ? state.editors[selector] = editor
+      : state.secondaries[selector] = editor;
 
-  return { show, hide, register};
+  return { show, hide, register, secondary};
 }());
 
 Modal.register('table', tableEditor);
 Modal.register('reference', refsEditor);
 Modal.register('div[data-type=media]', imgEditor);
 Modal.register('span[data-type=math]', mathEditor);
+Modal.register('div[data-type=list]', listEditor, true);

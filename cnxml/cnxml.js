@@ -168,7 +168,7 @@ const cnxmlElements = (function({createElement}) {
     template: (uid) =>
       `<div id="${uid()}" data-type="figure">
         <div data-type="title">TITLE</div>
-        <div id="${uid()}" data-type="media" alt="alt text here">
+        <div id="${uid()}" data-type="media" alt="">
           <img src="images/empty.jpg" mime-type="image/jpeg" />
         </div>
         <div data-type="caption">
