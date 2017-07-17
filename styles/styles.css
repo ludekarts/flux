@@ -102,11 +102,10 @@ div[data-tools-ext] {
   text-align: center;
   background: #e8e8e8;
   transition: top .3s ease;
-  border-top: 1px solid #ccc;
 }
 
 div[data-tools-ext].open {
-  top: 44px;
+  top: 45px;
 }
 
 /* CONTET */
@@ -121,7 +120,7 @@ div[data-tools-ext].open {
 #intro {
   left: 0;
   right: 0;
-  top: 44px;
+  top: 45px;
   bottom: 0;
   color: #171b32;
   position: fixed;
