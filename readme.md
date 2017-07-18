@@ -6,13 +6,14 @@ Usage
 -----------------
  - Clone/download repo
  - Open `index.html` file in browser. Preferable in Google Chrome, since its *contenteditable* behaviour is most comprehensive in this case.
+ - Learn keyboard shortcuts from the front page, to enable full potential of the app.
 
 Upload to CNX
 -----------------
 - Create account on CNX platform.
 - Create/derive a module.
 - Using flux3 tools create desirable document structure.
-- Press `ctrl + x` to display CNXML preview.
+- Press `alt + x` to display CNXML preview.
 - Copy entire content.
 - Open *full-source editing* mode in CNX editor.
 - Paste it instead of previous `<content>...</content>` tag.
