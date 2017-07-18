@@ -41,7 +41,7 @@ const tableEditor = (function({createElement, template}) {
 
   const addColumns = (row, cols) => {
     for (let c=0; c < cols; c++)
-      row.appendChild(createElement('td', 'ENTRY'));
+      row.appendChild(createElement('td'));
     return row;
   };
 

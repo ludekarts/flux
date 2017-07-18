@@ -152,7 +152,7 @@ const cnxmlElements = (function({createElement}) {
     title: 'Image',
     icon: '<i class="material-icons">crop_original</i>',
     template: (uid) =>
-      `<div id="${uid()}" data-type="media" alt="alt text here">
+      `<div id="${uid()}" data-type="media" alt="">
         <img src="images/empty.jpg" mime-type="image/jpeg" />
       </div>`,
     wrapp: (uid) =>
