@@ -22,8 +22,8 @@ const refsEditor = (function({createElement, template}) {
         input[id="ref-doc" type="radio" name="type" data-dest="document"]
         label[for="ref-doc"] > "Document"
       span >
-        input[id="ref-doc" type="radio" name="type" data-dest="ext"]
-        label[for="ref-doc" title="Document with target-id"] > "Ext"
+        input[id="ref-ext" type="radio" name="type" data-dest="ext"]
+        label[for="ref-ext" title="Document with target-id"] > "Ext"
     div.buttons >
       button[data-action="save"] > "Save"
       button[data-action="cancel"] > "Cancel"`;
@@ -37,6 +37,7 @@ const refsEditor = (function({createElement, template}) {
     const doc = targetElement.getAttribute('document');
     refs.target.value = doc || id || url || '';
     refs.content.value = targetElement.innerHTML;
+    refs.target.focus();
 
     // Check for external element references.
     if (id && doc) refs.target.value = doc + ', ' + id;

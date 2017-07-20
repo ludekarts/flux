@@ -24,6 +24,7 @@ const imgEditor = (function({createElement, template}) {
     // Remove placeholder url.
     refs.name.value = ~src.indexOf('empty') ? '' : src.slice(0, src.lastIndexOf('.'));
     refs.alttext.value = targetElement.getAttribute('alt');
+    refs.name.focus();
   };
 
   const save = () => new Promise((resolve) => {

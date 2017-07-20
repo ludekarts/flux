@@ -4,7 +4,7 @@
 const flux3 = (function(elements, modal, scrollbar, key, {
   uid, elemntsToCnxml, createElement, elFromString, addToolButton, unwrapElement,
   insertSiblingNode, wrapMath, toCnxml, cleanMath, formatXml, base64, pause, loopstack,
-  moveElement, clipboard
+  moveElement, clipboard, setCaret
 }) {
 
   // Global state.
@@ -233,16 +233,21 @@ const flux3 = (function(elements, modal, scrollbar, key, {
       // If selection contain end-sapce (double-click on word in Widnows) remove it from selection.
       if (/\s/.test(selectedText.slice(-1))) range.setEnd(range.endContainer, range.endOffset - 1);
 
-      // Wrapp element / Add template.
-      (selectedText.length > 0)
-        ? tool.wrapp
-          ? range.surroundContents(tool.wrapp(uid))
-          : false
-        : altKey
-          ? ctrlKey
-            ? content.appendChild(elFromString(tool.template(uid)))
-            : insertSiblingNode(selection.anchorNode, elFromString(tool.template(uid)))
-          : range.insertNode(elFromString(tool.template(uid)));
+      try {
+        // Wrapp element / Add template.
+        (selectedText.length > 0)
+          ? tool.wrapp
+            ? range.surroundContents(tool.wrapp(uid))
+            : false
+          : altKey
+            ? ctrlKey
+              ? content.appendChild(elFromString(tool.template(uid)))
+              : insertSiblingNode(selection.anchorNode, elFromString(tool.template(uid)))
+            : range.insertNode(elFromString(tool.template(uid)));
+
+      } catch (e) {
+        alert('Cannot add element. Most probably incorrect selection of elements.');
+      }
 
       // Prevent from multiple wrapping in the same spot.
       selection.removeAllRanges();
@@ -277,7 +282,7 @@ const flux3 = (function(elements, modal, scrollbar, key, {
   };
 
   // Add Math Equation in place where caret is.
-  const addMathAtCaret = (mml) => {
+  const addMathAtCaret = (mml, callback) => {
     const selection = window.getSelection();
     if (selection.anchorNode && isInContent(selection.anchorNode) ) {
       const range = selection.getRangeAt(0);
@@ -286,7 +291,7 @@ const flux3 = (function(elements, modal, scrollbar, key, {
         // Add entry to edit history.
         recordState();
         range.insertNode(elFromString(mml));
-        reRenderMath();
+        reRenderMath(callback);
       }
     }
   };
@@ -303,8 +308,12 @@ const flux3 = (function(elements, modal, scrollbar, key, {
   };
 
   const addEmptyMathNode = () => {
-    addMathAtCaret('<math><mtext>MATH</mtext></math>')
+    addMathAtCaret('<math><mtext>MATH</mtext></math>', () => {
+      const latestId = MathJax.Hub.getAllJax(content).map(m => m.inputID).sort().pop();
+      if (latestId) modal.show(content.querySelector(`span[data-math-id="${latestId}"]`));
+    });
   };
+
 
   const removeDuplicates = () => {
     const hashes = [];
@@ -320,6 +329,25 @@ const flux3 = (function(elements, modal, scrollbar, key, {
 
   const toggleIntro = (event) => intro.classList.toggle('show');
   const closeOutput = (event) => out.classList.toggle('show');
+
+  // ---- Detect added element ---
+
+  const acceptNodes = ['DIV', 'REFERENCE', 'EMPHASIS'];
+
+  // Fires on add element to the content.
+  const traceMutations = (mutations) =>
+    mutations.forEach((mutation) => {
+      const node = mutation.addedNodes[0];
+      if (!node || !node.tagName) return;
+      // Set caret at the end of added element.
+      if (~acceptNodes.indexOf(node.tagName)) setCaret(node);
+    });
+
+  // Instantiate new observer to track added elements.
+  const observer = new MutationObserver(traceMutations);
+
+  // Configure & run.
+  observer.observe(content, {childList: true, subtree:true});
 
 
   // ---- Keyboard shortcuts -----

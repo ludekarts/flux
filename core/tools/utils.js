@@ -120,6 +120,21 @@ const utils = (function(travrs, toCnxml) {
     return to;
   };
 
+  // Set caret at the end og given element.
+  const setCaret = (element) => {
+    const selection = window.getSelection();
+    const range = document.createRange();
+    if (!element.lastChild) return;
+    try {
+      range.setStart(element.lastChild, element.lastChild.textContent.length);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } catch (e) {
+      // TODO: handle this better.
+    }
+  };
+
   // Wrap 'elements' with HTMLElement of given 'type' with provided 'attrs'.
   // EXAMPLE: wrapElement(node, 'del', { "data-skip-merge" : true });
   const wrapElement = (elements, type, attrs) => {
@@ -248,6 +263,7 @@ const utils = (function(travrs, toCnxml) {
     template,
     debounce,
     wrapMath,
+    setCaret,
     loopstack,
     formatXml,
     copyAttrs,

@@ -20,6 +20,7 @@ const mathEditor = (function({createElement, template, updateMath}) {
 
   const activate = (source) => {
     targetElement = source;
+    refs.latex.focus();
   };
 
   const save = () => new Promise((resolve) => {
